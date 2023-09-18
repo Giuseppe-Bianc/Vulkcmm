@@ -120,7 +120,7 @@ if(MSVC)
 endif()
 
 # set the startup project for the "play" button in MSVC
-set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT intro)
+set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT vulkcmmsrc)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_MESSAGE_LOG_LEVEL VERBOSE)
 
@@ -135,7 +135,7 @@ include(cmake/PackageProject.cmake)
 # we know we want to ship
 Vulkcmm_package_project(
   TARGETS
-  intro
+  vulkcmmsrc
   Vulkcmm_options
   Vulkcmm_warnings
   # FIXME: this does not work! CK

@@ -1,26 +1,26 @@
-add_executable(intro main.cpp)
+add_executable(vulkcmmsrc main.cpp
+                     headers.h
+                     Timer.h
+                     casts.h)
 
 target_link_libraries(
-  intro
+  vulkcmmsrc
   PRIVATE Vulkcmm::Vulkcmm_options
           Vulkcmm::Vulkcmm_warnings)
 
 target_link_system_libraries(
-  intro
+  vulkcmmsrc
   PRIVATE
           CLI11::CLI11
           fmt::fmt
           spdlog::spdlog
-          lefticus::tools
-          ftxui::screen
-          ftxui::dom
-          ftxui::component)
+          lefticus::tools)
 
-target_compile_definitions(intro
+target_compile_definitions(vulkcmmsrc
     PRIVATE
     $<$<CONFIG:Debug>:SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG>
     $<$<CONFIG:Release>:SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE>
     $<$<CONFIG:MinSizeRel>:SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE>
     $<$<CONFIG:RelWithDebInfo>:SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE>
 )
-target_include_directories(intro PRIVATE "${CMAKE_BINARY_DIR}/configured_files/include")
+target_include_directories(vulkcmmsrc PRIVATE "${CMAKE_BINARY_DIR}/configured_files/include")
