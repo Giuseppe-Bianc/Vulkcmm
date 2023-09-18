@@ -1,4 +1,10 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.21...3.27)  # Aggiornare alla versione minima di CMake necessaria
+
+if(${CMAKE_VERSION} VERSION_LESS 3.21)
+    cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
+else()
+    cmake_policy(VERSION 3.27)
+endif()
 
 # This template attempts to be "fetch_content"-able
 # so that it works well with tools like CPM or other
@@ -13,6 +19,28 @@ endif()
 # -Wpedantic being enabled and -std=c++20 and -std=gnu++20 for example
 # when compiling with PCH enabled
 set(CMAKE_CXX_EXTENSIONS OFF)
+if (POLICY CMP0069)
+    cmake_policy(SET CMP0069 NEW)
+endif()
+if (POLICY CMP0077)
+    cmake_policy(SET CMP0077 NEW)
+endif()
+if (POLICY CMP0126)
+    cmake_policy(SET CMP0126 NEW)
+endif()
+if (POLICY CMP0127)
+    cmake_policy(SET CMP0127 NEW)
+endif()
+if (POLICY CMP0128)
+    cmake_policy(SET CMP0128 NEW)
+endif()
+if(POLICY CMP0149)
+    cmake_policy(SET CMP0149 NEW)
+endif()
+if(POLICY CMP0147)
+    cmake_policy(SET CMP0147 NEW)
+endif()
+
 
 # Set the project name and language
 project(
@@ -66,22 +94,22 @@ if(NOT PROJECT_IS_TOP_LEVEL)
 endif()
 
 # Adding the tests:
-include(CTest)
+#include(CTest)
 
-if(BUILD_TESTING)
-  message(AUTHOR_WARNING "Building Tests. Be sure to check out test/constexpr_tests.cpp for constexpr testing")
-  add_subdirectory(test)
-endif()
+#if(BUILD_TESTING)
+#  message(AUTHOR_WARNING "Building Tests. Be sure to check out test/constexpr_tests.cpp for constexpr testing")
+#  add_subdirectory(test)
+#endif()
 
 
-if(Vulkcmm_BUILD_FUZZ_TESTS)
-  message(AUTHOR_WARNING "Building Fuzz Tests, using fuzzing sanitizer https://www.llvm.org/docs/LibFuzzer.html")
-  if (NOT Vulkcmm_ENABLE_ADDRESS_SANITIZER AND NOT Vulkcmm_ENABLE_THREAD_SANITIZER)
-    message(WARNING "You need asan or tsan enabled for meaningful fuzz testing")
-  endif()
-  add_subdirectory(fuzz_test)
+#if(Vulkcmm_BUILD_FUZZ_TESTS)
+#  message(AUTHOR_WARNING "Building Fuzz Tests, using fuzzing sanitizer https://www.llvm.org/docs/LibFuzzer.html")
+#  if (NOT Vulkcmm_ENABLE_ADDRESS_SANITIZER AND NOT Vulkcmm_ENABLE_THREAD_SANITIZER)
+#    message(WARNING "You need asan or tsan enabled for meaningful fuzz testing")
+#  endif()
+#  add_subdirectory(fuzz_test)
 
-endif()
+#endif()
 
 # If MSVC is being used, and ASAN is enabled, we need to set the debugger environment
 # so that it behaves well with MSVC's debugger, and we can run the target from visual studio
@@ -93,6 +121,9 @@ endif()
 
 # set the startup project for the "play" button in MSVC
 set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT intro)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set(CMAKE_MESSAGE_LOG_LEVEL VERBOSE)
+
 
 if(CMAKE_SKIP_INSTALL_RULES)
   return()

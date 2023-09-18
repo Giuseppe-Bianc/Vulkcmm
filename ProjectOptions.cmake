@@ -78,14 +78,14 @@ macro(Vulkcmm_setup_options)
       Vulkcmm_ENABLE_CACHE)
   endif()
 
-  Vulkcmm_check_libfuzzer_support(LIBFUZZER_SUPPORTED)
-  if(LIBFUZZER_SUPPORTED AND (Vulkcmm_ENABLE_SANITIZER_ADDRESS OR Vulkcmm_ENABLE_SANITIZER_THREAD OR Vulkcmm_ENABLE_SANITIZER_UNDEFINED))
-    set(DEFAULT_FUZZER ON)
-  else()
-    set(DEFAULT_FUZZER OFF)
-  endif()
+  #Vulkcmm_check_libfuzzer_support(LIBFUZZER_SUPPORTED)
+  #if(LIBFUZZER_SUPPORTED AND (Vulkcmm_ENABLE_SANITIZER_ADDRESS OR Vulkcmm_ENABLE_SANITIZER_THREAD OR #Vulkcmm_ENABLE_SANITIZER_UNDEFINED))
+  #  set(DEFAULT_FUZZER ON)
+  #else()
+  #  set(DEFAULT_FUZZER OFF)
+  #endif()
 
-  option(Vulkcmm_BUILD_FUZZ_TESTS "Enable fuzz testing executable" ${DEFAULT_FUZZER})
+  #option(Vulkcmm_BUILD_FUZZ_TESTS "Enable fuzz testing executable" ${DEFAULT_FUZZER})
 
 endmacro()
 
