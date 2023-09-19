@@ -1,6 +1,6 @@
 #pragma once
 #define GLFW_PLATFORM_WIN32
-#define GLFW_EXPOSE_NATIVE_WIN32
+// #define GLFW_EXPOSE_NATIVE_WIN32
 #define GLM_FORCE_SILENT_WARNINGS
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -20,7 +20,6 @@
 #endif
 // clang-format off
 #include <GLFW/glfw3.h>
-#include <GLFW/glfw3native.h>
 #include <cassert>
 #include <algorithm>
 #include <array>

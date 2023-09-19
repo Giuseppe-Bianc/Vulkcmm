@@ -16,8 +16,7 @@ target_link_system_libraries(
           glfw
           CLI11::CLI11
           fmt::fmt
-          spdlog::spdlog
-          lefticus::tools)
+          spdlog::spdlog)
 
 target_compile_definitions(vulkcmmsrc
     PRIVATE
