@@ -1,2 +1,1 @@
-
-add_subdirectory(ftxui_sample)
+add_subdirectory(vulkcmmsrc)

@@ -5,6 +5,11 @@ class Timer {
 public:
 #pragma optimize("gt", on)
     inline Timer() noexcept : start_time(std::chrono::high_resolution_clock::now()) {}
+
+    Timer(const Timer &other) = delete;              // Delete copy constructor
+    Timer &operator=(const Timer &other) = delete;   // Delete copy assignment operator
+    Timer(const Timer &&other) = delete;             // Delete move constructor
+    Timer &operator=(const Timer &&other) = delete;  // Delete move assignment operator
 #pragma optimize("gt", on)
     inline void stop() noexcept {
         end_time = std::chrono::high_resolution_clock::now();

@@ -19,8 +19,8 @@
 #pragma warning(disable : 6386 6385 4005 26481 4459)
 #endif
 // clang-format off
-/*#include <GLFW/glfw3.h>
-#include <GLFW/glfw3native.h>*/
+#include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
 #include <cassert>
 #include <algorithm>
 #include <array>
@@ -38,14 +38,14 @@
 #endif
 #include <filesystem>
 #include <fstream>
-/*#include <glm/glm.hpp>
+#include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/random.hpp>
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/quaternion.hpp>
-#include <glm/gtx/string_cast.hpp>*/
+#include <glm/gtx/string_cast.hpp>
 #include <iomanip>
 #include <iostream>
 #include <iterator>
@@ -73,8 +73,8 @@
 #include <utility>
 #include <variant>
 #include <vector>
-/*#include <vulkan/vulkan.h>
-#include <vulkan/vk_enum_string_helper.h>*/
+#include <vulkan/vulkan.h>
+#include <vulkan/vk_enum_string_helper.h>
 #include <source_location>
 #include <type_traits>
 
@@ -96,7 +96,7 @@
 #define LERROR(...) SPDLOG_ERROR(__VA_ARGS__)
 #define LCRITICAL(...) SPDLOG_CRITICAL(__VA_ARGS__)
 #define CALC_CENTRO(width, w) calcolaCentro(width, w)
-/* template <typename OStream, glm::length_t L, typename T, glm::qualifier Q>
+template <typename OStream, glm::length_t L, typename T, glm::qualifier Q>
 inline OStream &operator<<(OStream &os, const glm::vec<L, T, Q> &vector) {
     return os << glm::to_string(vector);
 }
@@ -108,15 +108,16 @@ inline OStream &operator<<(OStream &os, const glm::mat<C, R, T, Q> &matrix) {
 
 template <typename OStream, typename T, glm::qualifier Q> inline OStream &operator<<(OStream &os, glm::qua<T, Q> quaternion) {
     return os << glm::to_string(quaternion);
-}*/
+}
 #define SYSPAUSE()                                                                                                               \
     LINFO("Press enter to exit...");                                                                                             \
     std::cin.ignore();
-/* #define GLWFERR(error, description) LERROR("GLFW Error ({0}): {1}", error, description);
+#define GLWFERR(error, description) LERROR("GLFW Error ({0}): {1}", error, description);
+
 #define PRINTVER(version)                                                                                                        \
     LINFO("System can support vulkan Variant: {}, Major: {}, Minor: {}", VK_API_VERSION_VARIANT(version),                        \
           VK_API_VERSION_MAJOR(version), VK_API_VERSION_MINOR(version), VK_API_VERSION_PATCH(version));
-
+/*
 #define VK_CHECK(f)                                                                                                              \
     do {                                                                                                                         \
         VkResult res = (f);                                                                                                      \
@@ -181,7 +182,7 @@ template <typename OStream, typename T, glm::qualifier Q> inline OStream &operat
         return VK_FALSE;
     }*/
 
-/* template <typename EnumType> static constexpr std::string VulkanEnumToString(EnumType value) {
+/*template <typename EnumType> static constexpr std::string VulkanEnumToString(EnumType value) {
     static_assert(std::is_enum_v<EnumType>, "EnumType deve essere un tipo di enumerazione.");
 
     // Utilizza una serie di if constexpr per selezionare la funzione appropriata da vk_enum_string_helper.h
@@ -214,7 +215,7 @@ template <typename OStream, typename T, glm::qualifier Q> inline OStream &operat
 #define VKINFO_ENUM(x) SPDLOG_INFO("result = {}", VKENUM_TO_STRING(x))
 #define VKWARN_ENUM(x) SPDLOG_WARN("result = {}", VKENUM_TO_STRING(x))
 #define VKERROR_ENUM(x) SPDLOG_ERROR("result = {}", VKENUM_TO_STRING(x))
-#define VKCRITICAL_ENUM(x) SPDLOG_CRITICAL("result = {}", VKENUM_TO_STRING(x)) * /
+#define VKCRITICAL_ENUM(x) SPDLOG_CRITICAL("result = {}", VKENUM_TO_STRING(x)) */
 static inline constexpr long double infinity = std::numeric_limits<long double>::infinity();
 static inline constexpr long double pi = std::numbers::pi_v<long double>;
 static inline constexpr long double twoPi = 2 * pi;
@@ -233,83 +234,3 @@ static inline constexpr double invStHMinusOne = 1.0 / C_D(ST_h - 1);
 static inline constexpr double invStWMinusOne = 1.0 / C_D(ST_w - 1);
 static inline constexpr unsigned long long doublesize = sizeof(double);
 static inline constexpr std::string_view windowTitle = "Vulkan window";
-
-/*
- Timer t;
-if(!glfwInit()) [[unlikely]] {
-    LCRITICAL("Failed to initialize GLFW.");
-    throw VKRAppError("Failed to initialize GLFW");
-}
-if(!glfwVulkanSupported()) {
-    glfwTerminate();
-    LCRITICAL("Failed to initialize GLFW. vulkan not supported");
-    throw VKRAppError("Failed to initialize GLFW. vulkan not supported");
-}
-glfwSetErrorCallback(errorCallback);
-glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
-glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
-glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-t.stop();
-const auto glfwsetuptime = t.elapsedMilliseconds();
-Timer tt;
-window = glfwCreateWindow(this->mWidth, this->mHeight, this->mWindowName.data(), nullptr, nullptr);
-if(window == nullptr) [[unlikely]] {
-    LCRITICAL("Failed to create GLFW window.");
-    glfwTerminate();
-    throw VKRAppError("Failed to create GLFW window");
-}
-tt.stop();
-glfwSetWindowUserPointer(window, this);
-glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
-const auto wcreationtime = tt.elapsedMilliseconds();
-Timer ttt;
-glfwSetKeyCallback(window, keyCallback);
-// Ottenimento delle dimensioni del monitor primario
-GLFWmonitor *primaryMonitor = glfwGetPrimaryMonitor();
-if(primaryMonitor == nullptr) [[unlikely]] {
-    LCRITICAL("Failed to get the primary monitor.");
-    glfwDestroyWindow(window);
-    glfwTerminate();
-    throw VKRAppError("Failed to get primary monitor");
-}
-const GLFWvidmode *mode = glfwGetVideoMode(primaryMonitor);
-if(mode == nullptr) [[unlikely]] {
-    LCRITICAL("Failed to get the video mode of the primary monitor.");
-    glfwDestroyWindow(window);
-    glfwTerminate();
-    throw VKRAppError("Failed to get video mode");
-}
-const int monitorWidth = mode->width;
-const int monitorHeight = mode->height;
-
-// Calcolo delle coordinate per centrare la finestra
-int windowWidth;
-int windowHeight;
-glfwGetWindowSize(window, &windowWidth, &windowHeight);
-const int centerX = CALC_CENTRO(monitorWidth, windowWidth);
-const int centerY = CALC_CENTRO(monitorHeight, windowHeight);
-
-// Posizionamento della finestra al centro del monitor
-glfwSetWindowPos(window, centerX, centerY);
-
-int posX = 0;
-int posY = 0;
-glfwGetWindowPos(window, &posX, &posY);
-if(posX != centerX || posY != centerY) [[unlikely]] {
-    LCRITICAL("Failed to position the window at the center.");
-    glfwDestroyWindow(window);
-    glfwTerminate();
-    throw VKRAppError("Failed to set window position centered");
-}
-ttt.stop();
-const auto wrepostime = ttt.elapsedMilliseconds();
-
-glfwShowWindow(window);
-const auto totalsetuptime = glfwsetuptime + wcreationtime + wrepostime;
-LINFO("setupp time for glfw = {0} ms", glfwsetuptime);
-LINFO("time for creating the window {0}: (w: {1}, h: {2}, pos:(x:{3}, y:{4})) = {5} ms", windowTitle.data(), w, h, centerX,
-      centerY, wcreationtime);
-LINFO("time for repositionig the window{0} = {1} ms", windowTitle.data(), wrepostime);
-LINFO("toltal setupp time = {0} ms", totalsetuptime);*/

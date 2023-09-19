@@ -1,7 +1,8 @@
-add_executable(vulkcmmsrc main.cpp
-                     headers.h
-                     Timer.h
-                     casts.h)
+file(GLOB_RECURSE SOURCES "*.cpp" "*.h")
+
+add_executable(vulkcmmsrc ${SOURCES})
+
+find_package(Vulkan REQUIRED)
 
 target_link_libraries(
   vulkcmmsrc
@@ -11,6 +12,8 @@ target_link_libraries(
 target_link_system_libraries(
   vulkcmmsrc
   PRIVATE
+          Vulkan::Vulkan
+          glfw
           CLI11::CLI11
           fmt::fmt
           spdlog::spdlog
