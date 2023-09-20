@@ -116,6 +116,13 @@ template <typename OStream, typename T, glm::qualifier Q> inline OStream &operat
 #define PRINTVER(version)                                                                                                        \
     LINFO("System can support vulkan Variant: {}, Major: {}, Minor: {}", VK_API_VERSION_VARIANT(version),                        \
           VK_API_VERSION_MAJOR(version), VK_API_VERSION_MINOR(version), VK_API_VERSION_PATCH(version));
+
+#ifdef _DEBUG
+#define INFO_LOG_TIME(message, time) LINFO("{0} = {1} us", (message), (time))
+#else
+#define INFO_LOG_TIME(message, time) LINFO("{0} = {1} ns", (message), (time))
+#endif  // _DEBUG
+
 /*
 #define VK_CHECK(f)                                                                                                              \
     do {                                                                                                                         \
