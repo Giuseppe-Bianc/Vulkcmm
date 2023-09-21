@@ -1,4 +1,4 @@
-file(GLOB_RECURSE SOURCES "*.cpp" "*.h")
+file(GLOB_RECURSE SOURCES "*.cpp" "*.h" "*.hpp")
 
 add_executable(vulkcmmsrc ${SOURCES})
 

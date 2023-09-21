@@ -23,22 +23,30 @@ static inline void keyCallback(GLFWwindow *window, int key, [[maybe_unused]] int
     }
 }
 
-class Window {
-public:
-    Window(int ww, int hh, std::string_view name);
-    ~Window();
+namespace lve {
 
-    Window(const Window &) = delete;
-    Window &operator=(const Window &) = delete;
+    class LveWindow {
+    public:
+        LveWindow(int w, int h, std::string name);
+        ~LveWindow();
 
-    bool shouldClose() { return glfwWindowShouldClose(window); }
+        LveWindow(const LveWindow &) = delete;
+        LveWindow &operator=(const LveWindow &) = delete;
 
-private:
-    void initWindow();
+        bool shouldClose() { return glfwWindowShouldClose(window); }
 
-    const int width;
-    const int height;
+        void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
 
-    std::string_view windowName;
-    GLFWwindow *window;
-};
+        int getWidth() const { return width; }
+        int getHeight() const { return height; }
+
+    private:
+        void initWindow();
+
+        const int width;
+        const int height;
+
+        std::string windowName;
+        GLFWwindow *window;
+    };
+}  // namespace lve

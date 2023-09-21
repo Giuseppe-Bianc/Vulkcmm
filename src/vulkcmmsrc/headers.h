@@ -19,7 +19,6 @@
 #pragma warning(disable : 6386 6385 4005 26481 4459)
 #endif
 // clang-format off
-#include <GLFW/glfw3.h>
 #include <cassert>
 #include <algorithm>
 #include <array>
@@ -74,6 +73,7 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 #include <vulkan/vk_enum_string_helper.h>
+#include <GLFW/glfw3.h>
 #include <source_location>
 #include <type_traits>
 
@@ -146,47 +146,6 @@ template <typename OStream, typename T, glm::qualifier Q> inline OStream &operat
         }                                                                                                                        \
     } while(0)
 */
-/*
-#pragma optimize("gt", on)
-    [[nodiscard]] inline static std::string_view debugCallbackString(
-        const VkDebugUtilsMessageTypeFlagsEXT &messageType) noexcept {
-        switch(messageType) {
-        case VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT:
-            return "Validation layer [General]: ";
-        case VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT:
-            return "Validation layer [Validation]: ";
-        case VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT:
-            return "Validation layer [Performance]: ";
-        [[unlikely]] default:
-            return "Validation layer: ";
-        }
-    }
-#pragma optimize("gt", on)
-    inline static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-                                                               VkDebugUtilsMessageTypeFlagsEXT messageType,
-                                                               const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
-                                                               [[maybe_unused]] void *pUserData) {
-        const std::string_view prefix = debugCallbackString(messageType);
-        const std::string_view msg = pCallbackData->pMessage;
-        switch(messageSeverity) {
-        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
-            LTRACE("{0}{1}", prefix, msg);
-            break;
-        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
-            LINFO("{0}{1}", prefix, msg);
-            break;
-        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-            LWARN("{0}{1}", prefix, msg);
-            break;
-        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-            LERROR("{0}{1}", prefix, msg);
-            break;
-        [[unlikely]] default:
-            LDEBUG("{0}{1}", prefix, msg);
-            break;
-        }
-        return VK_FALSE;
-    }*/
 
 /*template <typename EnumType> static constexpr std::string VulkanEnumToString(EnumType value) {
     static_assert(std::is_enum_v<EnumType>, "EnumType deve essere un tipo di enumerazione.");

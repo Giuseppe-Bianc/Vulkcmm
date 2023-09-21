@@ -37,14 +37,14 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] const char **argv) {
         CLI11_PARSE(app, argc, argv);
         */
 
-    } catch(const std::exception &e) { spdlog::error("Unhandled exception in main: {}", e.what()); }
-    App app{};
+    } catch(const std::exception &e) { LCRITICAL("Unhandled exception in main: {}", e.what()); }
+    lve::FirstApp app{};
+
     try {
         app.run();
     } catch(const std::exception &e) {
-        std::cerr << e.what() << '\n';
+        LCRITICAL("Unhandled exception in main: {}", e.what());
         return EXIT_FAILURE;
     }
-
     return EXIT_SUCCESS;
 }
