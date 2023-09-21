@@ -306,5 +306,5 @@
 
 #define C_ST(x) static_cast<std::size_t>(x)
 #define NC_ST(x) gsl::narrow_cast<std::size_t>(x)
-#define C_CPCU32T(x) static_cast<const uint32_t *>(static_cast<const void *>(x)
+#define C_CPCU32T(x) static_cast<const uint32_t *>(static_cast<const void *>(x))
 #define NC_CPCU32T(x) gsl::narrow_cast<const uint32_t *>(static_cast<const void *>(x))
