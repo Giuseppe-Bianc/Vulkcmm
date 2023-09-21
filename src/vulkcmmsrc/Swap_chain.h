@@ -1,11 +1,6 @@
 #pragma once
 
 #include "Device.h"
-#include "Window.h"
-
-// std lib headers
-#include <string>
-#include <vector>
 
 namespace lve {
 
@@ -13,12 +8,8 @@ namespace lve {
     public:
         static constexpr inline int MAX_FRAMES_IN_FLIGHT = 2;
 
-        LveSwapChain(LveWindow &window, LveDevice &device) : window_{window}, device_{device} { init(); }
-
-        ~LveSwapChain() {
-            cleanupSwapChain();
-            cleanupSyncObjects();
-        }
+        LveSwapChain(LveDevice &deviceRef, VkExtent2D windowExtent);
+        ~LveSwapChain();
 
         LveSwapChain(const LveSwapChain &) = delete;
         void operator=(const LveSwapChain &) = delete;
@@ -26,8 +17,6 @@ namespace lve {
         VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
         VkRenderPass getRenderPass() { return renderPass; }
         VkImageView getImageView(int index) { return swapChainImageViews[index]; }
-        void recreateSwapChain();
-        void cleanupSwapChain();
         size_t imageCount() const { return swapChainImages.size(); }
         VkFormat getSwapChainImageFormat() const { return swapChainImageFormat; }
         VkExtent2D getSwapChainExtent() const { return swapChainExtent; }
@@ -41,8 +30,6 @@ namespace lve {
         VkResult submitCommandBuffers(const VkCommandBuffer *buffers, uint32_t *imageIndex);
 
     private:
-        void init();
-        void cleanupSyncObjects();
         void createSwapChain();
         void createImageViews();
         void createDepthResources();
@@ -67,8 +54,8 @@ namespace lve {
         std::vector<VkImage> swapChainImages;
         std::vector<VkImageView> swapChainImageViews;
 
-        LveWindow &window_;
-        LveDevice &device_;
+        LveDevice &device;
+        VkExtent2D windowExtent;
 
         VkSwapchainKHR swapChain;
 

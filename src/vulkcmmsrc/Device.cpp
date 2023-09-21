@@ -1,11 +1,5 @@
 #include "Device.h"
 
-// std headers
-#include <cstring>
-#include <iostream>
-#include <set>
-#include <unordered_set>
-
 namespace lve {
 
 #pragma optimize("gt", on)
