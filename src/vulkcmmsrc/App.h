@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Device.h"
+#include "Model.h"
 #include "Pipeline.h"
 #include "Swap_chain.h"
 #include "Window.h"
@@ -15,7 +15,7 @@ namespace lve {
         ~FirstApp();
 
         FirstApp(const FirstApp &) = delete;
-        FirstApp &operator=(const FirstApp &) = delete;
+        void operator=(const FirstApp &) = delete;
 
         void run();
 
@@ -27,9 +27,10 @@ namespace lve {
 
         LveWindow lveWindow{WIDTH, HEIGHT, "Hello Vulkan!"};
         LveDevice lveDevice{lveWindow};
-        LveSwapChain lveSwapChain{lveDevice, lveWindow.getExtent()};
-        std::unique_ptr<LvePipeline> lvePipeline;
+        LveSwapChain lveSwapChain{lveWindow, lveDevice};
         VkPipelineLayout pipelineLayout;
+        std::unique_ptr<LvePipeline> simplePipeline;
         std::vector<VkCommandBuffer> commandBuffers;
+        LveModel lveModel{lveDevice};
     };
 }  // namespace lve

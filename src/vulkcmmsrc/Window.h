@@ -27,16 +27,18 @@ namespace lve {
 
     class LveWindow {
     public:
-        LveWindow(int w, int h, std::string name);
+        LveWindow() = default;
+        LveWindow(int w, int h, const std::string &name);
         ~LveWindow();
 
         LveWindow(const LveWindow &) = delete;
         LveWindow &operator=(const LveWindow &) = delete;
 
-        bool shouldClose() { return glfwWindowShouldClose(window); }
-        inline VkExtent2D getExtent() const { return {C_UI32T(width), C_UI32T(height)}; }
-
+        bool shouldClose() { return (bool)(glfwWindowShouldClose(window)); }
         void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
+
+        [[nodiscard]] inline int getWidth() const { return width; }
+        [[nodiscard]] inline int getHeight() const { return height; }
 
     private:
         void initWindow();

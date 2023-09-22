@@ -5,17 +5,18 @@
 namespace lve {
 
     struct SwapChainSupportDetails {
-        VkSurfaceCapabilitiesKHR capabilities;
+        VkSurfaceCapabilitiesKHR capabilities{};
         std::vector<VkSurfaceFormatKHR> formats;
         std::vector<VkPresentModeKHR> presentModes;
     };
 
     struct QueueFamilyIndices {
-        uint32_t graphicsFamily;
-        uint32_t presentFamily;
+        uint32_t graphicsFamily{};
+        uint32_t presentFamily{};
         bool graphicsFamilyHasValue = false;
         bool presentFamilyHasValue = false;
-        bool isComplete() const { return graphicsFamilyHasValue && presentFamilyHasValue; }
+#pragma optimize("gt", on)
+        [[nodiscard]] bool isComplete() const { return graphicsFamilyHasValue && presentFamilyHasValue; }
     };
 
     class LveDevice {
@@ -26,7 +27,7 @@ namespace lve {
         const bool enableValidationLayers = true;
 #endif
 
-        LveDevice(LveWindow &window);
+        explicit LveDevice(LveWindow &window);
         ~LveDevice();
 
         // Not copyable or movable
@@ -34,16 +35,22 @@ namespace lve {
         void operator=(const LveDevice &) = delete;
         LveDevice(LveDevice &&) = delete;
         LveDevice &operator=(LveDevice &&) = delete;
+#pragma optimize("gt", on)
+        inline VkCommandPool getCommandPool() { return commandPool; }
+#pragma optimize("gt", on)
+        inline VkDevice device() { return device_; }
+#pragma optimize("gt", on)
+        inline VkSurfaceKHR surface() { return surface_; }
+#pragma optimize("gt", on)
+        inline VkQueue graphicsQueue() { return graphicsQueue_; }
+#pragma optimize("gt", on)
+        inline VkQueue presentQueue() { return presentQueue_; }
 
-        VkCommandPool getCommandPool() { return commandPool; }
-        VkDevice device() { return device_; }
-        VkSurfaceKHR surface() { return surface_; }
-        VkQueue graphicsQueue() { return graphicsQueue_; }
-        VkQueue presentQueue() { return presentQueue_; }
-
-        SwapChainSupportDetails getSwapChainSupport() { return querySwapChainSupport(physicalDevice); }
+#pragma optimize("gt", on)
+        inline SwapChainSupportDetails getSwapChainSupport() { return querySwapChainSupport(physicalDevice); }
         uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-        QueueFamilyIndices findPhysicalQueueFamilies() { return findQueueFamilies(physicalDevice); }
+#pragma optimize("gt", on)
+        inline QueueFamilyIndices findPhysicalQueueFamilies() { return findQueueFamilies(physicalDevice); }
         VkFormat findSupportedFormat(const std::vector<VkFormat> &candidates, VkImageTiling tiling,
                                      VkFormatFeatureFlags features);
 
@@ -70,11 +77,11 @@ namespace lve {
 
         // helper functions
         bool isDeviceSuitable(VkPhysicalDevice device);
-        std::vector<const char *> getRequiredExtensions() const;
-        bool checkValidationLayerSupport() const;
+        [[nodiscard]] std::vector<const char *> getRequiredExtensions() const;
+        [[nodiscard]] bool checkValidationLayerSupport() const;
         QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
-        void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo);
-        void hasGflwRequiredInstanceExtensions();
+        void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo) const;
+        void hasGflwRequiredInstanceExtensions() const;
         bool checkDeviceExtensionSupport(VkPhysicalDevice device) const;
         SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
 
@@ -89,8 +96,8 @@ namespace lve {
         VkQueue graphicsQueue_;
         VkQueue presentQueue_;
 
-        const std::vector<const char *> validationLayers = {"VK_LAYER_KHRONOS_validation"};
-        const std::vector<const char *> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+        inline static const std::vector<const char *> validationLayers = {"VK_LAYER_KHRONOS_validation"};
+        inline static const std::vector<const char *> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
     };
 
 }  // namespace lve

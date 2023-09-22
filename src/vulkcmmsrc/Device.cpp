@@ -42,7 +42,7 @@ namespace lve {
         }
         return VK_FALSE;
     }
-
+#pragma optimize("gt", on)
     VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
                                           const VkAllocationCallbacks *pAllocator, VkDebugUtilsMessengerEXT *pDebugMessenger) {
         auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
@@ -52,7 +52,7 @@ namespace lve {
             return VK_ERROR_EXTENSION_NOT_PRESENT;
         }
     }
-
+#pragma optimize("gt", on)
     void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger,
                                        const VkAllocationCallbacks *pAllocator) {
         auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
@@ -60,6 +60,7 @@ namespace lve {
     }
 
     // class member functions
+#pragma optimize("gt", on)
     LveDevice::LveDevice(LveWindow &window) : window{window} {
         createInstance();
         setupDebugMessenger();
@@ -68,7 +69,7 @@ namespace lve {
         createLogicalDevice();
         createCommandPool();
     }
-
+#pragma optimize("gt", on)
     LveDevice::~LveDevice() {
         vkDestroyCommandPool(device_, commandPool, nullptr);
         vkDestroyDevice(device_, nullptr);
@@ -141,7 +142,7 @@ namespace lve {
     }
 
     void LveDevice::createLogicalDevice() {
-        QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
+        const QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
 
         std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
         std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily, indices.presentFamily};
@@ -218,7 +219,7 @@ namespace lve {
         return indices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
     }
 
-    void LveDevice::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo) {
+    void LveDevice::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo) const {
         createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
         createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
@@ -274,14 +275,18 @@ namespace lve {
         return extensions;
     }
 
-    void LveDevice::hasGflwRequiredInstanceExtensions() {
+    void LveDevice::hasGflwRequiredInstanceExtensions() const {
+        Timer t;
         uint32_t extensionCount = 0;
         vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
         std::vector<VkExtensionProperties> extensions(extensionCount);
         vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
+        t.stop();
+        t.elapsedMllisToString("hasGfl...vkEnumerateInstanceExtensionProperties");
 
+        Timer tt;
         LINFO("available extensions:");
-        std::unordered_set<std::string> available;
+        std::unordered_set<std::string_view> available;
         for(const auto &extension : extensions) {
             LINFO("\t{0}", extension.extensionName);
             available.emplace(extension.extensionName);
@@ -291,8 +296,10 @@ namespace lve {
         auto requiredExtensions = getRequiredExtensions();
         for(const auto &required : requiredExtensions) {
             LINFO("\t{0}", required);
-            if(available.find(required) == available.end()) { throw std::runtime_error("Missing required glfw extension"); }
+            if(!available.contains(required)) [[unlikely]] { throw std::runtime_error("Missing required glfw extension"); }
         }
+        tt.stop();
+        tt.elapsedMllisToString("hasGflw... find extensions");
     }
 
     bool LveDevice::checkDeviceExtensionSupport(VkPhysicalDevice device) const {
@@ -378,7 +385,7 @@ namespace lve {
         VkPhysicalDeviceMemoryProperties memProperties;
         vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
         for(uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
-            if((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & prop) == prop) { return i; }
+            if((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & prop) == prop) [[unlikely]] { return i; }
         }
 
         throw std::runtime_error("failed to find suitable memory type!");

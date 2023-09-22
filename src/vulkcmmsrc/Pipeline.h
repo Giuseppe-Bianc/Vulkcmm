@@ -2,15 +2,12 @@
 
 #include "Device.h"
 
-// std
-#include <string>
-#include <vector>
-
 namespace lve {
 
     struct PipelineConfigInfo {
         VkViewport viewport;
         VkRect2D scissor;
+        VkPipelineViewportStateCreateInfo viewportInfo;
         VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
         VkPipelineRasterizationStateCreateInfo rasterizationInfo;
         VkPipelineMultisampleStateCreateInfo multisampleInfo;

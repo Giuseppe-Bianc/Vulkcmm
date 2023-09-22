@@ -95,22 +95,25 @@
 #define LERROR(...) SPDLOG_ERROR(__VA_ARGS__)
 #define LCRITICAL(...) SPDLOG_CRITICAL(__VA_ARGS__)
 #define CALC_CENTRO(width, w) calcolaCentro(width, w)
+#pragma optimize("gt", on)
 template <typename OStream, glm::length_t L, typename T, glm::qualifier Q>
 inline OStream &operator<<(OStream &os, const glm::vec<L, T, Q> &vector) {
     return os << glm::to_string(vector);
 }
-
+#pragma optimize("gt", on)
 template <typename OStream, glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
 inline OStream &operator<<(OStream &os, const glm::mat<C, R, T, Q> &matrix) {
     return os << glm::to_string(matrix);
 }
-
+#pragma optimize("gt", on)
 template <typename OStream, typename T, glm::qualifier Q> inline OStream &operator<<(OStream &os, glm::qua<T, Q> quaternion) {
     return os << glm::to_string(quaternion);
 }
 #define SYSPAUSE()                                                                                                               \
-    LINFO("Press enter to exit...");                                                                                             \
-    std::cin.ignore();
+    do {                                                                                                                         \
+        LINFO("Press enter to exit...");                                                                                         \
+        std::cin.ignore();                                                                                                       \
+    } while(0);
 #define GLWFERR(error, description) LERROR("GLFW Error ({0}): {1}", error, description);
 
 #define PRINTVER(version)                                                                                                        \
@@ -124,27 +127,25 @@ template <typename OStream, typename T, glm::qualifier Q> inline OStream &operat
 #endif  // _DEBUG
 
 /*
-#define VK_CHECK(f)                                                                                                              \
-    do {                                                                                                                         \
-        VkResult res = (f);                                                                                                      \
-        if(res != VK_SUCCESS) [[unlikely]] {                                                                                     \
-            auto loc = std::source_location::current();                                                                          \
-            LCRITICAL("Fatal : VkResult is \"{0}\" from {1} in {2} at line {3}", #f, string_VkResult(res), loc.file_name(),      \
-                      loc.line());                                                                                               \
-            assert(res == VK_SUCCESS);                                                                                           \
-        }                                                                                                                        \
-    } while(0)
+#define VK_CHECK(f) \
+    do { \
+        VkResult res = (f); \
+        if(res != VK_SUCCESS) [[unlikely]] { \
+            auto loc = std::source_location::current(); \
+            LCRITICAL("Fatal : VkResult is \"{0}\" from {1} in {2} at line {3}", #f, string_VkResult(res), loc.file_name(), \
+                      loc.line()); \
+            assert(res == VK_SUCCESS); \
+        } \ } while(0)
 
-#define VK_CHECK_SWAPCHAIN(f)                                                                                                    \
-    do {                                                                                                                         \
-        VkResult res = (f);                                                                                                      \
-        if(res != VK_SUCCESS || res != VK_SUBOPTIMAL_KHR || res != VK_ERROR_OUT_OF_DATE_KHR) [[unlikely]] {                      \
-            constexpr auto loc = std::source_location::current();                                                                \
-            LCRITICAL("Fatal : VkResult is \"{0}\" from{1} in {2} at line {3}", #f, string_VkResult(res), loc.file_name(),       \
-                      loc.line());                                                                                               \
-            assert(result_ == VK_SUCCESS || result_ == VK_SUBOPTIMAL_KHR || result_ == VK_ERROR_OUT_OF_DATE_KHR);                \
-        }                                                                                                                        \
-    } while(0)
+#define VK_CHECK_SWAPCHAIN(f) \
+    do { \
+        VkResult res = (f); \
+        if(res != VK_SUCCESS || res != VK_SUBOPTIMAL_KHR || res != VK_ERROR_OUT_OF_DATE_KHR) [[unlikely]] { \
+            constexpr auto loc = std::source_location::current(); \
+            LCRITICAL("Fatal : VkResult is \"{0}\" from{1} in {2} at line {3}", #f, string_VkResult(res), loc.file_name(), \
+                      loc.line()); \
+            assert(result_ == VK_SUCCESS || result_ == VK_SUBOPTIMAL_KHR || result_ == VK_ERROR_OUT_OF_DATE_KHR); \
+        } \ } while(0)
 */
 
 /*template <typename EnumType> static constexpr std::string VulkanEnumToString(EnumType value) {

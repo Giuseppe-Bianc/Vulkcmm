@@ -1,8 +1,13 @@
 #include "Window.h"
 
+#ifdef _DEBUG
+static constexpr long double TIME_DIVISOR = C_LD(1000.0);
+#else
+static constexpr long double TIME_DIVISOR = C_LD(1'000'000.0);
+#endif  // _DEBUG
 namespace lve {
 
-    LveWindow::LveWindow(int ww, int hh, std::string name) : width{ww}, height{hh}, windowName{name} { initWindow(); }
+    LveWindow::LveWindow(int ww, int hh, const std::string &name) : width{ww}, height{hh}, windowName{name} { initWindow(); }
 
     LveWindow::~LveWindow() {
         glfwDestroyWindow(window);
@@ -26,7 +31,7 @@ namespace lve {
         Timer tt;
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-        glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
+        //        glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
         glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         tt.stop();
@@ -100,15 +105,10 @@ namespace lve {
         const auto wrepostime = ttttttt.elapsedMicroseconds();
 
         glfwShowWindow(window);
-#ifdef _DEBUG
-        static const auto totalsetuptime = glfwsetuptime + (glfwhintstime / C_LD(1000.0)) + wcreationtime +
-                                           (primaryMonitortime / C_LD(1000.0)) + (modetime / C_LD(1000.0)) +
+
+        static const auto totalsetuptime = glfwsetuptime + (glfwhintstime / TIME_DIVISOR) + wcreationtime +
+                                           (primaryMonitortime / TIME_DIVISOR) + (modetime / TIME_DIVISOR) +
                                            (repossetuptime / C_LD(1000.0)) + (wrepostime / C_LD(1000.0));
-#else
-        static const auto totalsetuptime = glfwsetuptime + (glfwhintstime / C_LD(1'000'000.0)) + wcreationtime +
-                                           (primaryMonitortime / C_LD(1'000'000.0)) + (modetime / C_LD(1000.0)) +
-                                           (repossetuptime / C_LD(1000.0)) + (wrepostime / C_LD(1000.0));
-#endif  // _DEBUG
 
         LINFO("setup time for glfw = {0} ms", glfwsetuptime);
         INFO_LOG_TIME("Time spent on GLFW Hints Setup", glfwhintstime);
