@@ -26,8 +26,8 @@ namespace lve {
     void LveModel::draw(VkCommandBuffer commandBuffer) const { vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0); }
 
     void LveModel::bind(VkCommandBuffer commandBuffer) {
-        std::vector<VkBuffer> buffers = {vertexBuffer};
-        std::vector<VkDeviceSize> offsets = {0};
+        static const std::vector<VkBuffer> buffers = {vertexBuffer};
+        static const std::vector<VkDeviceSize> offsets = {0};
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers.data(), offsets.data());
     }
 #pragma optimize("gt", on)

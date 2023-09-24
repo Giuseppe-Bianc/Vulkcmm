@@ -95,7 +95,7 @@ namespace lve {
 
         if(vkCreateGraphicsPipelines(lveDevice.device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) !=
            VK_SUCCESS) {
-            throw std::runtime_error("failed to create graphics pipeline!");
+            throw VKRAppError("failed to create graphics pipeline!");
         }
 
         vkDestroyShaderModule(lveDevice.device(), fragShaderModule, nullptr);
@@ -111,7 +111,7 @@ namespace lve {
         createInfo.pCode = C_CPCU32T(code.data());
 
         if(vkCreateShaderModule(lveDevice.device(), &createInfo, nullptr, shaderModule) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create shader module");
+            throw VKRAppError("failed to create shader module");
         }
     }
 

@@ -27,7 +27,7 @@ public:
 #pragma optimize("gt", on)
     inline long double elapsedMilliseconds() const noexcept { return elapsedNanoseconds() / C_LD(1'000'000.0); }
 #pragma optimize("gt", on)
-    inline long double elapsedSeconds() const noexcept { return elapsedNanoseconds() / 1'000'000'000.0; }
+    inline long double elapsedSeconds() const noexcept { return elapsedNanoseconds() / C_LD(1'000'000'000.0); }
 #pragma optimize("gt", on)
     inline void elapsedNsToString(const std::string_view &msg) const noexcept {
         LINFO(R"({} done in : {:f} ns)", msg, elapsedNanoseconds());

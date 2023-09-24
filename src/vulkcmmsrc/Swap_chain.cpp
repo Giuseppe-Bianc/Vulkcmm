@@ -28,7 +28,7 @@ namespace lve {
         return result;
     }
 
-    VkResult LveSwapChain::submitCommandBuffers(const VkCommandBuffer *buffers, uint32_t *imageIndex) {
+    VkResult LveSwapChain::submitCommandBuffers(const VkCommandBuffer *buffers, const uint32_t *imageIndex) {
         if(imagesInFlight[*imageIndex] != VK_NULL_HANDLE) [[unlikely]] {
             vkWaitForFences(device_.device(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
         }
@@ -52,7 +52,7 @@ namespace lve {
 
         vkResetFences(device_.device(), 1, &inFlightFences[currentFrame]);
         if(vkQueueSubmit(device_.graphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS) [[unlikely]] {
-            throw std::runtime_error("failed to submit draw command buffer!");
+            throw VKRAppError("failed to submit draw command buffer!");
         }
 
         VkPresentInfoKHR presentInfo = {};
@@ -127,7 +127,7 @@ namespace lve {
         createInfo.oldSwapchain = VK_NULL_HANDLE;
 
         if(vkCreateSwapchainKHR(device_.device(), &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create swap chain!");
+            throw VKRAppError("failed to create swap chain!");
         }
 
         // we only specified a minimum number of images in the swap chain, so the implementation is
@@ -168,7 +168,7 @@ namespace lve {
             viewInfo.subresourceRange.layerCount = 1;
 
             if(vkCreateImageView(device_.device(), &viewInfo, nullptr, &swapChainImageViews[i]) != VK_SUCCESS) {
-                throw std::runtime_error("failed to create texture image view!");
+                throw VKRAppError("failed to create texture image view!");
             }
         }
     }
@@ -253,7 +253,7 @@ namespace lve {
         renderPassInfo.pDependencies = &dependency;
 
         if(vkCreateRenderPass(device_.device(), &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create render pass!");
+            throw VKRAppError("failed to create render pass!");
         }
     }
 
@@ -273,7 +273,7 @@ namespace lve {
             framebufferInfo.layers = 1;
 
             if(vkCreateFramebuffer(device_.device(), &framebufferInfo, nullptr, &swapChainFramebuffers[i]) != VK_SUCCESS) {
-                throw std::runtime_error("failed to create framebuffer!");
+                throw VKRAppError("failed to create framebuffer!");
             }
         }
     }
@@ -317,7 +317,7 @@ namespace lve {
             viewInfo.subresourceRange.layerCount = 1;
 
             if(vkCreateImageView(device_.device(), &viewInfo, nullptr, &depthImageViews[i]) != VK_SUCCESS) {
-                throw std::runtime_error("failed to create texture image view!");
+                throw VKRAppError("failed to create texture image view!");
             }
         }
     }
@@ -339,7 +339,7 @@ namespace lve {
             if(vkCreateSemaphore(device_.device(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) != VK_SUCCESS ||
                vkCreateSemaphore(device_.device(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) != VK_SUCCESS ||
                vkCreateFence(device_.device(), &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS) {
-                throw std::runtime_error("failed to create synchronization objects for a frame!");
+                throw VKRAppError("failed to create synchronization objects for a frame!");
             }
         }
     }

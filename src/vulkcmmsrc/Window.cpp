@@ -31,14 +31,14 @@ namespace lve {
         Timer tt;
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-        //        glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
+        glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
         glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         tt.stop();
 #ifdef _DEBUG
-        const auto glfwhintstime = tt.elapsedMicroseconds();
+        static const auto glfwhintstime = tt.elapsedMicroseconds();
 #else
-        const auto glfwhintstime = tt.elapsedNanoseconds();
+        static const auto glfwhintstime = tt.elapsedNanoseconds();
 #endif  // _DEBUG
         Timer ttt;
         window = glfwCreateWindow(width, height, windowName.c_str(), nullptr, nullptr);
@@ -49,7 +49,7 @@ namespace lve {
         }
         glfwSetKeyCallback(window, keyCallback);
         ttt.stop();
-        const auto wcreationtime = ttt.elapsedMilliseconds();
+        static const auto wcreationtime = ttt.elapsedMilliseconds();
         // Ottenimento delle dimensioni del monitor primario
         Timer tttt;
         GLFWmonitor *primaryMonitor = glfwGetPrimaryMonitor();
@@ -61,13 +61,13 @@ namespace lve {
         }
         tttt.stop();
 #ifdef _DEBUG
-        const auto primaryMonitortime = tttt.elapsedMicroseconds();
+        static const auto primaryMonitortime = tttt.elapsedMicroseconds();
 #else
-        const auto primaryMonitortime = tttt.elapsedNanoseconds();
+        static const auto primaryMonitortime = tttt.elapsedNanoseconds();
 #endif  // _DEBUG
 
         Timer ttttt;
-        const GLFWvidmode *mode = glfwGetVideoMode(primaryMonitor);
+        static const GLFWvidmode *mode = glfwGetVideoMode(primaryMonitor);
         if(mode == nullptr) [[unlikely]] {
             LCRITICAL("Failed to get the video mode of the primary monitor.");
             glfwDestroyWindow(window);
@@ -75,19 +75,19 @@ namespace lve {
             throw VKRAppError("Failed to get video mode");
         }
         ttttt.stop();
-        const auto modetime = ttttt.elapsedMicroseconds();
+        static const auto modetime = ttttt.elapsedMicroseconds();
         Timer tttttt;
-        const int monitorWidth = mode->width;
-        const int monitorHeight = mode->height;
+        static const int monitorWidth = mode->width;
+        static const int monitorHeight = mode->height;
 
         // Calcolo delle coordinate per centrare la finestra
         int windowWidth;
         int windowHeight;
         glfwGetWindowSize(window, &windowWidth, &windowHeight);
-        const int centerX = CALC_CENTRO(monitorWidth, windowWidth);
-        const int centerY = CALC_CENTRO(monitorHeight, windowHeight);
+        static const int centerX = CALC_CENTRO(monitorWidth, windowWidth);
+        static const int centerY = CALC_CENTRO(monitorHeight, windowHeight);
         tttttt.stop();
-        const auto repossetuptime = tttttt.elapsedMicroseconds();
+        static const auto repossetuptime = tttttt.elapsedMicroseconds();
         Timer ttttttt;
 
         // Posizionamento della finestra al centro del monitor
@@ -102,7 +102,7 @@ namespace lve {
             glfwTerminate();
             throw VKRAppError("Failed to set window position centered");
         }
-        const auto wrepostime = ttttttt.elapsedMicroseconds();
+        static const auto wrepostime = ttttttt.elapsedMicroseconds();
 
         glfwShowWindow(window);
 
@@ -123,7 +123,7 @@ namespace lve {
 
     void LveWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR *surface) {
         if(glfwCreateWindowSurface(instance, window, nullptr, surface) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create window surface!");
+            throw VKRAppError("failed to create window surface!");
         }
     }
 }  // namespace lve
