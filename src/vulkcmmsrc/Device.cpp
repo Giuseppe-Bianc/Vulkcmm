@@ -82,7 +82,7 @@ namespace lve {
 
     void LveDevice::createInstance() {
         if(enableValidationLayers && !checkValidationLayerSupport()) {
-            throw std::runtime_error("validation layers requested, but not available!");
+            throw VKRAppError("validation layers requested, but not available!");
         }
 
         VkApplicationInfo appInfo = {};
@@ -113,9 +113,7 @@ namespace lve {
             createInfo.pNext = nullptr;
         }
 
-        if(vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create instance!");
-        }
+        if(vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) { throw VKRAppError("failed to create instance!"); }
 
         hasGflwRequiredInstanceExtensions();
     }
@@ -123,7 +121,7 @@ namespace lve {
     void LveDevice::pickPhysicalDevice() {
         uint32_t deviceCount = 0;
         vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
-        if(deviceCount == 0) { throw std::runtime_error("failed to find GPUs with Vulkan support!"); }
+        if(deviceCount == 0) { throw VKRAppError("failed to find GPUs with Vulkan support!"); }
         LINFO("Device count: {}", deviceCount);
         std::vector<VkPhysicalDevice> devices(deviceCount);
         vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
@@ -135,7 +133,7 @@ namespace lve {
             }
         }
 
-        if(physicalDevice == VK_NULL_HANDLE) { throw std::runtime_error("failed to find a suitable GPU!"); }
+        if(physicalDevice == VK_NULL_HANDLE) { throw VKRAppError("failed to find a suitable GPU!"); }
 
         vkGetPhysicalDeviceProperties(physicalDevice, &properties);
         LINFO("physical device: {0}", properties.deviceName);
@@ -180,7 +178,7 @@ namespace lve {
         }
 
         if(vkCreateDevice(physicalDevice, &createInfo, nullptr, &device_) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create logical device!");
+            throw VKRAppError("failed to create logical device!");
         }
 
         vkGetDeviceQueue(device_, indices.graphicsFamily, 0, &graphicsQueue_);
@@ -196,7 +194,7 @@ namespace lve {
         poolInfo.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
         if(vkCreateCommandPool(device_, &poolInfo, nullptr, &commandPool) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create command pool!");
+            throw VKRAppError("failed to create command pool!");
         }
     }
 
@@ -236,7 +234,7 @@ namespace lve {
         VkDebugUtilsMessengerCreateInfoEXT createInfo;
         populateDebugMessengerCreateInfo(createInfo);
         if(CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS) {
-            throw std::runtime_error("failed to set up debug messenger!");
+            throw VKRAppError("failed to set up debug messenger!");
         }
     }
 
@@ -296,7 +294,7 @@ namespace lve {
         auto requiredExtensions = getRequiredExtensions();
         for(const auto &required : requiredExtensions) {
             LINFO("\t{0}", required);
-            if(!available.contains(required)) [[unlikely]] { throw std::runtime_error("Missing required glfw extension"); }
+            if(!available.contains(required)) [[unlikely]] { throw VKRAppError("Missing required glfw extension"); }
         }
         tt.stop();
         tt.elapsedMllisToString("hasGflw... find extensions");
@@ -309,7 +307,7 @@ namespace lve {
         std::vector<VkExtensionProperties> availableExtensions(extensionCount);
         vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
 
-        std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+        std::set<std::string_view> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
 
         for(const auto &extension : availableExtensions) { requiredExtensions.erase(extension.extensionName); }
 
@@ -378,7 +376,7 @@ namespace lve {
                 return format;
             }
         }
-        throw std::runtime_error("failed to find supported format!");
+        throw VKRAppError("failed to find supported format!");
     }
 
     uint32_t LveDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags prop) {
@@ -388,7 +386,7 @@ namespace lve {
             if((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & prop) == prop) [[unlikely]] { return i; }
         }
 
-        throw std::runtime_error("failed to find suitable memory type!");
+        throw VKRAppError("failed to find suitable memory type!");
     }
 
     void LveDevice::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags prop, VkBuffer &buffer,
@@ -400,7 +398,7 @@ namespace lve {
         bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
         if(vkCreateBuffer(device_, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) [[unlikely]] {
-            throw std::runtime_error("failed to create vertex buffer!");
+            throw VKRAppError("failed to create vertex buffer!");
         }
 
         VkMemoryRequirements memRequirements;
@@ -412,7 +410,7 @@ namespace lve {
         allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, prop);
 
         if(vkAllocateMemory(device_, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) [[unlikely]] {
-            throw std::runtime_error("failed to allocate vertex buffer memory!");
+            throw VKRAppError("failed to allocate vertex buffer memory!");
         }
 
         vkBindBufferMemory(device_, buffer, bufferMemory, 0);
@@ -485,7 +483,7 @@ namespace lve {
     void LveDevice::createImageWithInfo(const VkImageCreateInfo &imageInfo, VkMemoryPropertyFlags prop, VkImage &image,
                                         VkDeviceMemory &imageMemory) {
         if(vkCreateImage(device_, &imageInfo, nullptr, &image) != VK_SUCCESS) [[unlikely]] {
-            throw std::runtime_error("failed to create image!");
+            throw VKRAppError("failed to create image!");
         }
 
         VkMemoryRequirements memRequirements;
@@ -497,11 +495,11 @@ namespace lve {
         allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, prop);
 
         if(vkAllocateMemory(device_, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) [[unlikely]] {
-            throw std::runtime_error("failed to allocate image memory!");
+            throw VKRAppError("failed to allocate image memory!");
         }
 
         if(vkBindImageMemory(device_, image, imageMemory, 0) != VK_SUCCESS) [[unlikely]] {
-            throw std::runtime_error("failed to bind image memory!");
+            throw VKRAppError("failed to bind image memory!");
         }
     }
 

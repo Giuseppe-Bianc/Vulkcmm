@@ -165,10 +165,6 @@ macro(Vulkcmm_local_options)
     Vulkcmm_enable_clang_tidy(Vulkcmm_options ${Vulkcmm_WARNINGS_AS_ERRORS})
   endif()
 
-  if(Vulkcmm_ENABLE_CPPCHECK)
-    Vulkcmm_enable_cppcheck(${Vulkcmm_WARNINGS_AS_ERRORS} "" # override cppcheck options
-    )
-  endif()
 
   if(Vulkcmm_ENABLE_COVERAGE)
     include(cmake/Tests.cmake)

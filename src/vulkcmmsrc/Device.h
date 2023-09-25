@@ -6,8 +6,8 @@ namespace lve {
 
     struct SwapChainSupportDetails {
         VkSurfaceCapabilitiesKHR capabilities{};
-        std::vector<VkSurfaceFormatKHR> formats;
-        std::vector<VkPresentModeKHR> presentModes;
+        std::vector<VkSurfaceFormatKHR> formats{};
+        std::vector<VkPresentModeKHR> presentModes{};
     };
 
     struct QueueFamilyIndices {

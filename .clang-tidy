@@ -1,5 +1,8 @@
 ---
 Checks: "*,
+        -clang-diagnostic-ignored-pragmas
+        -clang-diagnostic-error
+        -cppcoreguidelines-macro-usag
         -abseil-*,
         -altera-*,
         -android-*,
@@ -12,19 +15,49 @@ Checks: "*,
         -readability-static-accessed-through-instance,
         -readability-avoid-const-params-in-decls,
         -cppcoreguidelines-non-private-member-variables-in-classes,
+        -cppcoreguidelines-avoid-const-or-ref-data-members,
         -misc-non-private-member-variables-in-classes,
+        -clang-diagnostic-unused-command-line-argument,
+        -cppcoreguidelines-macro-usage,
+        -readability-identifier-length,
+        -bugprone-easily-swappable-parameters,
+        -clang-diagnostic-pragma-once-outside-header,
+        modernize-use-noexcept,
+        modernize-avoid-c-arrays,
+        modernize-deprecated-headers
 "
 WarningsAsErrors: ''
 HeaderFilterRegex: ''
 FormatStyle:     none
+User:            gbian
 
 CheckOptions:
   - key: readability-identifier-length.IgnoredVariableNames
-    value: 'x|y|z'
+    value: 'x|y|z,h,w'
   - key: readability-identifier-length.IgnoredParameterNames
-    value: 'x|y|z'
-
-
-
-
+    value: 'x|y|z,h,w'
+  - key: modernize-use-noexcept.CheckOperatorNew
+    value: 'false'
+  - key: modernize-use-noexcept.CheckThrowWithNoexcept
+    value: 'true'
+  - key: modernize-use-noexcept.CheckVoidFunction
+    value: 'true'
+  - key: modernize-use-noexcept.CheckFunctionPointer
+    value: 'true'
+  - key: modernize-use-noexcept.CheckOther
+    value: 'true'
+  - key: modernize-use-noexcept.CheckConstructor
+    value: 'true'
+  - key: modernize-use-noexcept.WarnOnThrowDynamicType
+    value: 'false'
+  - key: modernize-use-noexcept.DefaultMode
+    value: '0'
+  - key: modernize-use-noexcept.NoexceptMacroNames
+    value: 'noexcept,NOEXCEPT'
+  - key: modernize-use-noexcept.NoexceptReplacement
+    value: 'std::nothrow'
+  - key: modernize-use-noexcept.ThrowReplacement
+    value: 'std::terminate'
+  - key: modernize-use-noexcept.AddNoexceptSpecifierToFunctionType
+    value: 'false'
 

@@ -16,7 +16,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] const char **argv) {
     const auto console = spdlog::stdout_color_mt(R"(console)");
     spdlog::set_default_logger(console);
     try {
-        CLI::App app{fmt::format("{} version {}", Vulkcmm::cmake::project_name, Vulkcmm::cmake::project_version)};
+        const CLI::App app{fmt::format(R"({} version {})", Vulkcmm::cmake::project_name, Vulkcmm::cmake::project_version)};
         LINFO("{} version {}", Vulkcmm::cmake::project_name, Vulkcmm::cmake::project_version);
         /*
         std::optional<std::string> message;

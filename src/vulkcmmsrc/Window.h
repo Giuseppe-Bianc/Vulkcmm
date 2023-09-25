@@ -35,18 +35,17 @@ namespace lve {
         LveWindow &operator=(const LveWindow &) = delete;
 
         bool shouldClose() { return (bool)(glfwWindowShouldClose(window)); }
-        void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
+        [[nodiscard]] inline VkExtent2D getExtent() const { return {C_UI32T(width), C_UI32T(height)}; }
 
-        [[nodiscard]] inline int getWidth() const { return width; }
-        [[nodiscard]] inline int getHeight() const { return height; }
+        void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
 
     private:
         void initWindow();
 
-        const int width;
-        const int height;
+        const int width{};
+        const int height{};
 
         std::string windowName;
-        GLFWwindow *window;
+        GLFWwindow *window = nullptr;
     };
 }  // namespace lve

@@ -1,9 +1,9 @@
 #include "Window.h"
 
 #ifdef _DEBUG
-static constexpr long double TIME_DIVISOR = C_LD(1000.0);
+static constexpr long double TIME_DIVISOR = MICROSENCONDSFACTOR;
 #else
-static constexpr long double TIME_DIVISOR = C_LD(1'000'000.0);
+static constexpr long double TIME_DIVISOR = MILLISENCONDSFACTOR;
 #endif  // _DEBUG
 namespace lve {
 

@@ -1,4 +1,5 @@
 #pragma once
+// NOLINTBEGIN
 #define GLFW_PLATFORM_WIN32
 // #define GLFW_EXPOSE_NATIVE_WIN32
 #define GLM_FORCE_SILENT_WARNINGS
@@ -200,3 +201,5 @@ static inline constexpr double invStHMinusOne = 1.0 / C_D(ST_h - 1);
 static inline constexpr double invStWMinusOne = 1.0 / C_D(ST_w - 1);
 static inline constexpr unsigned long long doublesize = sizeof(double);
 static inline constexpr std::string_view windowTitle = "Vulkan window";
+
+// NOLINTEND

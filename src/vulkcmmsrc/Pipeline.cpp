@@ -12,21 +12,21 @@ namespace lve {
     LvePipeline::LvePipeline(LveDevice &device, const std::string &vertFilepath, const std::string &fragFilepath,
                              const PipelineConfigInfo &configInfo)
       : lveDevice{device} {
-        createGraphicsPipeline(vertFilepath, fragFilepath, configInfo);
+        createGraphicsPipeline(std::move(vertFilepath), fragFilepath, configInfo);
     }
 
     LvePipeline::~LvePipeline() {
-        vkDestroyShaderModule(lveDevice.device(), fragShaderModule, nullptr);
         vkDestroyShaderModule(lveDevice.device(), vertShaderModule, nullptr);
+        vkDestroyShaderModule(lveDevice.device(), fragShaderModule, nullptr);
         vkDestroyPipeline(lveDevice.device(), graphicsPipeline, nullptr);
     }
 
     std::vector<char> LvePipeline::readFile(const std::string &filepath) {
         std::ifstream file{filepath, std::ios::ate | std::ios::binary};
 
-        if(!file.is_open()) { throw std::runtime_error("failed to open file: " + filepath); }
+        if(!file.is_open()) { throw VKRAppError("failed to open file: " + filepath); }
 
-        size_t fileSize = static_cast<size_t>(file.tellg());
+        const auto fileSize = C_ST(file.tellg());
         std::vector<char> buffer(fileSize);
 
         file.seekg(0);
@@ -38,17 +38,17 @@ namespace lve {
 
     void LvePipeline::createGraphicsPipeline(const std::string &vertFilepath, const std::string &fragFilepath,
                                              const PipelineConfigInfo &configInfo) {
-        assert(configInfo.pipelineLayout != nullptr &&
-               "Cannot create graphics pipeline: no pipelineLayout provided in config info");
-        assert(configInfo.renderPass != nullptr && "Cannot create graphics pipeline: no renderPass provided in config info");
+        assert(configInfo.pipelineLayout != VK_NULL_HANDLE &&
+               "Cannot create graphics pipeline: no pipelineLayout provided in configInfo");
+        assert(configInfo.renderPass != VK_NULL_HANDLE &&
+               "Cannot create graphics pipeline: no renderPass provided in configInfo");
 
         auto vertCode = readFile(vertFilepath);
         auto fragCode = readFile(fragFilepath);
 
         createShaderModule(vertCode, &vertShaderModule);
         createShaderModule(fragCode, &fragShaderModule);
-
-        VkPipelineShaderStageCreateInfo shaderStages[2];
+        std::vector<VkPipelineShaderStageCreateInfo> shaderStages(2);
         shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         shaderStages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
         shaderStages[0].module = vertShaderModule;
@@ -68,40 +68,35 @@ namespace lve {
         auto attributeDescriptions = LveModel::Vertex::getAttributeDescriptions();
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        vertexInputInfo.vertexBindingDescriptionCount = C_UI32T(bindingDescriptions.size());
-        vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
         vertexInputInfo.vertexAttributeDescriptionCount = C_UI32T(attributeDescriptions.size());
+        vertexInputInfo.vertexBindingDescriptionCount = C_UI32T(bindingDescriptions.size());
         vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+        vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
 
-        VkGraphicsPipelineCreateInfo pipelineInfo = {};
+        VkGraphicsPipelineCreateInfo pipelineInfo{};
         pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
         pipelineInfo.stageCount = 2;
-        pipelineInfo.pStages = shaderStages;
+        pipelineInfo.pStages = shaderStages.data();
         pipelineInfo.pVertexInputState = &vertexInputInfo;
         pipelineInfo.pInputAssemblyState = &configInfo.inputAssemblyInfo;
         pipelineInfo.pViewportState = &configInfo.viewportInfo;
         pipelineInfo.pRasterizationState = &configInfo.rasterizationInfo;
         pipelineInfo.pMultisampleState = &configInfo.multisampleInfo;
         pipelineInfo.pColorBlendState = &configInfo.colorBlendInfo;
-        pipelineInfo.pDynamicState = nullptr;  // Optional
         pipelineInfo.pDepthStencilState = &configInfo.depthStencilInfo;
+        pipelineInfo.pDynamicState = nullptr;
 
         pipelineInfo.layout = configInfo.pipelineLayout;
         pipelineInfo.renderPass = configInfo.renderPass;
         pipelineInfo.subpass = configInfo.subpass;
 
-        pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;  // Optional
-        pipelineInfo.basePipelineIndex = -1;               // Optional
+        pipelineInfo.basePipelineIndex = -1;
+        pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
         if(vkCreateGraphicsPipelines(lveDevice.device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) !=
            VK_SUCCESS) {
-            throw VKRAppError("failed to create graphics pipeline!");
+            throw VKRAppError("failed to create graphics pipeline");
         }
-
-        vkDestroyShaderModule(lveDevice.device(), fragShaderModule, nullptr);
-        vkDestroyShaderModule(lveDevice.device(), vertShaderModule, nullptr);
-        fragShaderModule = VK_NULL_HANDLE;
-        vertShaderModule = VK_NULL_HANDLE;
     }
 
     void LvePipeline::createShaderModule(const std::vector<char> &code, VkShaderModule *shaderModule) {
@@ -119,9 +114,7 @@ namespace lve {
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
     }
 
-    PipelineConfigInfo LvePipeline::defaultPipelineConfigInfo(uint32_t width, uint32_t height) {
-        PipelineConfigInfo configInfo{};
-
+    void LvePipeline::defaultPipelineConfigInfo(PipelineConfigInfo &configInfo, uint32_t width, uint32_t height) {
         configInfo.inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
         configInfo.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
         configInfo.inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
@@ -192,8 +185,6 @@ namespace lve {
         configInfo.depthStencilInfo.stencilTestEnable = VK_FALSE;
         configInfo.depthStencilInfo.front = {};  // Optional
         configInfo.depthStencilInfo.back = {};   // Optional
-
-        return configInfo;
     }
 
 }  // namespace lve
