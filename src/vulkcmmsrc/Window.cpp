@@ -30,7 +30,7 @@ namespace lve {
         const auto glfwsetuptime = t.elapsedMilliseconds();
         Timer tt;
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
         glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
@@ -48,6 +48,8 @@ namespace lve {
             throw VKRAppError("Failed to create GLFW window");
         }
         glfwSetKeyCallback(window, keyCallback);
+        glfwSetWindowUserPointer(window, this);
+        glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
         ttt.stop();
         static const auto wcreationtime = ttt.elapsedMilliseconds();
         // Ottenimento delle dimensioni del monitor primario
@@ -122,8 +124,12 @@ namespace lve {
     }
 
     void LveWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR *surface) {
-        if(glfwCreateWindowSurface(instance, window, nullptr, surface) != VK_SUCCESS) {
-            throw VKRAppError("failed to create window surface!");
-        }
+        VK_CHECK(glfwCreateWindowSurface(instance, window, nullptr, surface), VKRAppError("failed to create window surface!"));
+    }
+    void LveWindow::framebufferResizeCallback(GLFWwindow *window, int width, int height) {
+        auto lveWindow = reinterpret_cast<LveWindow *>(glfwGetWindowUserPointer(window));
+        lveWindow->framebufferResized = true;
+        lveWindow->width = width;
+        lveWindow->height = height;
     }
 }  // namespace lve

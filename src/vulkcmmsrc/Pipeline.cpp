@@ -92,11 +92,8 @@ namespace lve {
 
         pipelineInfo.basePipelineIndex = -1;
         pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
-
-        if(vkCreateGraphicsPipelines(lveDevice.device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) !=
-           VK_SUCCESS) {
-            throw VKRAppError("failed to create graphics pipeline");
-        }
+        VK_CHECK(vkCreateGraphicsPipelines(lveDevice.device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline),
+                 VKRAppError("failed to create graphics pipeline"));
     }
 
     void LvePipeline::createShaderModule(const std::vector<char> &code, VkShaderModule *shaderModule) {
@@ -105,9 +102,8 @@ namespace lve {
         createInfo.codeSize = code.size();
         createInfo.pCode = C_CPCU32T(code.data());
 
-        if(vkCreateShaderModule(lveDevice.device(), &createInfo, nullptr, shaderModule) != VK_SUCCESS) {
-            throw VKRAppError("failed to create shader module");
-        }
+        VK_CHECK(vkCreateShaderModule(lveDevice.device(), &createInfo, nullptr, shaderModule),
+                 VKRAppError("failed to create shader module"));
     }
 
     void LvePipeline::bind(VkCommandBuffer commandBuffer) {

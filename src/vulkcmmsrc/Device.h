@@ -32,7 +32,7 @@ namespace lve {
 
         // Not copyable or movable
         LveDevice(const LveDevice &) = delete;
-        void operator=(const LveDevice &) = delete;
+        LveDevice &operator=(const LveDevice &) = delete;
         LveDevice(LveDevice &&) = delete;
         LveDevice &operator=(LveDevice &&) = delete;
 #pragma optimize("gt", on)
@@ -76,25 +76,26 @@ namespace lve {
         void createCommandPool();
 
         // helper functions
-        bool isDeviceSuitable(VkPhysicalDevice device);
+        [[nodiscard]] bool isDeviceSuitable(VkPhysicalDevice device);
         [[nodiscard]] std::vector<const char *> getRequiredExtensions() const;
         [[nodiscard]] bool checkValidationLayerSupport() const;
-        QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+        [[nodiscard]] QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
         void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo) const;
         void hasGflwRequiredInstanceExtensions() const;
-        bool checkDeviceExtensionSupport(VkPhysicalDevice device) const;
-        SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
+        [[nodiscard]] bool checkDeviceExtensionSupport(VkPhysicalDevice device) const;
+        [[nodiscard]] SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
 
-        VkInstance instance;
-        VkDebugUtilsMessengerEXT debugMessenger;
+        VkInstance instance{};
+        VkDebugUtilsMessengerEXT debugMessenger{};
         VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+        // NOLINT
         LveWindow &window;
-        VkCommandPool commandPool;
+        VkCommandPool commandPool{};
 
-        VkDevice device_;
-        VkSurfaceKHR surface_;
-        VkQueue graphicsQueue_;
-        VkQueue presentQueue_;
+        VkDevice device_{};
+        VkSurfaceKHR surface_{};
+        VkQueue graphicsQueue_{};
+        VkQueue presentQueue_{};
 
         inline static const std::vector<const char *> validationLayers = {"VK_LAYER_KHRONOS_validation"};
         inline static const std::vector<const char *> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};

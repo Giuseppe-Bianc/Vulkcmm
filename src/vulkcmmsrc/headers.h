@@ -127,17 +127,18 @@ template <typename OStream, typename T, glm::qualifier Q> inline OStream &operat
 #define INFO_LOG_TIME(message, time) LINFO("{0} = {1} ns", (message), (time))
 #endif  // _DEBUG
 
+#define VK_CHECK(f, trowable)                                                                                                    \
+    do {                                                                                                                         \
+        VkResult res = (f);                                                                                                      \
+        if(res != VK_SUCCESS) [[unlikely]] {                                                                                     \
+            auto loc = std::source_location::current();                                                                          \
+            LCRITICAL("Fatal : VkResult is \"{0}\" from {1} in {2} at line {3}", #f, string_VkResult(res), loc.file_name(),      \
+                      loc.line());                                                                                               \
+            throw trowable;                                                                                                      \
+        }                                                                                                                        \
+                                                                                                                                 \
+    } while(0)
 /*
-#define VK_CHECK(f) \
-    do { \
-        VkResult res = (f); \
-        if(res != VK_SUCCESS) [[unlikely]] { \
-            auto loc = std::source_location::current(); \
-            LCRITICAL("Fatal : VkResult is \"{0}\" from {1} in {2} at line {3}", #f, string_VkResult(res), loc.file_name(), \
-                      loc.line()); \
-            assert(res == VK_SUCCESS); \
-        } \ } while(0)
-
 #define VK_CHECK_SWAPCHAIN(f) \
     do { \
         VkResult res = (f); \

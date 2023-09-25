@@ -45,6 +45,7 @@ namespace lve {
 #pragma optimize("gt", on)
     VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
                                           const VkAllocationCallbacks *pAllocator, VkDebugUtilsMessengerEXT *pDebugMessenger) {
+        // NOLINT
         auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
         if(func != nullptr) {
             return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
@@ -55,6 +56,7 @@ namespace lve {
 #pragma optimize("gt", on)
     void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger,
                                        const VkAllocationCallbacks *pAllocator) {
+        // NOLINT
         auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
         if(func != nullptr) { func(instance, debugMessenger, pAllocator); }
     }
@@ -107,6 +109,7 @@ namespace lve {
             createInfo.ppEnabledLayerNames = validationLayers.data();
 
             populateDebugMessengerCreateInfo(debugCreateInfo);
+            // NOLINT
             createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
         } else {
             createInfo.enabledLayerCount = 0;
@@ -161,17 +164,17 @@ namespace lve {
         VkDeviceCreateInfo createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 
-        createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
+        createInfo.queueCreateInfoCount = C_UI32T(queueCreateInfos.size());
         createInfo.pQueueCreateInfos = queueCreateInfos.data();
 
         createInfo.pEnabledFeatures = &deviceFeatures;
-        createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
+        createInfo.enabledExtensionCount = C_UI32T(deviceExtensions.size());
         createInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
         // might not really be necessary anymore because device specific validation layers
         // have been deprecated
         if(enableValidationLayers) {
-            createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+            createInfo.enabledLayerCount = C_UI32T(validationLayers.size());
             createInfo.ppEnabledLayerNames = validationLayers.data();
         } else {
             createInfo.enabledLayerCount = 0;
@@ -200,14 +203,14 @@ namespace lve {
 
     void LveDevice::createSurface() { window.createWindowSurface(instance, &surface_); }
 
-    bool LveDevice::isDeviceSuitable(VkPhysicalDevice device) {
-        QueueFamilyIndices indices = findQueueFamilies(device);
+    [[nodiscard]] bool LveDevice::isDeviceSuitable(VkPhysicalDevice device) {
+        const QueueFamilyIndices indices = findQueueFamilies(device);
 
         bool extensionsSupported = checkDeviceExtensionSupport(device);
 
         bool swapChainAdequate = false;
         if(extensionsSupported) {
-            SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
+            const SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
             swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
         }
 
@@ -233,9 +236,8 @@ namespace lve {
         if(!enableValidationLayers) return;
         VkDebugUtilsMessengerCreateInfoEXT createInfo;
         populateDebugMessengerCreateInfo(createInfo);
-        if(CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS) {
-            throw VKRAppError("failed to set up debug messenger!");
-        }
+        VK_CHECK(CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger),
+                 VKRAppError("failed to set up debug messenger!"));
     }
 
     bool LveDevice::checkValidationLayerSupport() const {
@@ -249,7 +251,7 @@ namespace lve {
             bool layerFound = false;
 
             for(const auto &layerProperties : availableLayers) {
-                if(strcmp(layerName, layerProperties.layerName) == 0) {
+                if(std::strcmp(layerName, layerProperties.layerName) == 0) {
                     layerFound = true;
                     break;
                 }
@@ -366,7 +368,7 @@ namespace lve {
 
     VkFormat LveDevice::findSupportedFormat(const std::vector<VkFormat> &candidates, VkImageTiling tiling,
                                             VkFormatFeatureFlags features) {
-        for(VkFormat format : candidates) {
+        for(const VkFormat format : candidates) {
             VkFormatProperties props;
             vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &props);
 
@@ -396,10 +398,7 @@ namespace lve {
         bufferInfo.size = size;
         bufferInfo.usage = usage;
         bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-        if(vkCreateBuffer(device_, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) [[unlikely]] {
-            throw VKRAppError("failed to create vertex buffer!");
-        }
+        VK_CHECK(vkCreateBuffer(device_, &bufferInfo, nullptr, &buffer), VKRAppError("failed to create vertex buffer!"));
 
         VkMemoryRequirements memRequirements;
         vkGetBufferMemoryRequirements(device_, buffer, &memRequirements);
@@ -409,9 +408,8 @@ namespace lve {
         allocInfo.allocationSize = memRequirements.size;
         allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, prop);
 
-        if(vkAllocateMemory(device_, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) [[unlikely]] {
-            throw VKRAppError("failed to allocate vertex buffer memory!");
-        }
+        VK_CHECK(vkAllocateMemory(device_, &allocInfo, nullptr, &bufferMemory),
+                 VKRAppError("failed to allocate vertex buffer memory!"));
 
         vkBindBufferMemory(device_, buffer, bufferMemory, 0);
     }
@@ -482,9 +480,7 @@ namespace lve {
 
     void LveDevice::createImageWithInfo(const VkImageCreateInfo &imageInfo, VkMemoryPropertyFlags prop, VkImage &image,
                                         VkDeviceMemory &imageMemory) {
-        if(vkCreateImage(device_, &imageInfo, nullptr, &image) != VK_SUCCESS) [[unlikely]] {
-            throw VKRAppError("failed to create image!");
-        }
+        VK_CHECK(vkCreateImage(device_, &imageInfo, nullptr, &image), VKRAppError("failed to create image!"));
 
         VkMemoryRequirements memRequirements;
         vkGetImageMemoryRequirements(device_, image, &memRequirements);
@@ -494,13 +490,8 @@ namespace lve {
         allocInfo.allocationSize = memRequirements.size;
         allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, prop);
 
-        if(vkAllocateMemory(device_, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) [[unlikely]] {
-            throw VKRAppError("failed to allocate image memory!");
-        }
-
-        if(vkBindImageMemory(device_, image, imageMemory, 0) != VK_SUCCESS) [[unlikely]] {
-            throw VKRAppError("failed to bind image memory!");
-        }
+        VK_CHECK(vkAllocateMemory(device_, &allocInfo, nullptr, &imageMemory), VKRAppError("failed to allocate image memory!"));
+        VK_CHECK(vkBindImageMemory(device_, image, imageMemory, 0), VKRAppError("failed to bind image memory!"));
     }
 
 }  // namespace lve

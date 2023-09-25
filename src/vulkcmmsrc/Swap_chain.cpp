@@ -71,9 +71,8 @@ namespace lve {
         submitInfo.pSignalSemaphores = signalSemaphores.data();
 
         vkResetFences(device.device(), 1, &inFlightFences[currentFrame]);
-        if(vkQueueSubmit(device.graphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS) [[unlikely]] {
-            throw VKRAppError("failed to submit draw command buffer!");
-        }
+        VK_CHECK(vkQueueSubmit(device.graphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]),
+                 VKRAppError("failed to submit draw command buffer!"));
 
         VkPresentInfoKHR presentInfo = {};
         presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -95,7 +94,7 @@ namespace lve {
     }
 
     void LveSwapChain::createSwapChain() {
-        SwapChainSupportDetails swapChainSupport = device.getSwapChainSupport();
+        const SwapChainSupportDetails swapChainSupport = device.getSwapChainSupport();
 
         VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
         VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
@@ -117,7 +116,7 @@ namespace lve {
         createInfo.imageArrayLayers = 1;
         createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-        QueueFamilyIndices indices = device.findPhysicalQueueFamilies();
+        const QueueFamilyIndices indices = device.findPhysicalQueueFamilies();
         std::vector<uint32_t> queueFamilyIndices = {indices.graphicsFamily, indices.presentFamily};
 
         if(indices.graphicsFamily != indices.presentFamily) {
@@ -138,9 +137,8 @@ namespace lve {
 
         createInfo.oldSwapchain = VK_NULL_HANDLE;
 
-        if(vkCreateSwapchainKHR(device.device(), &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
-            throw VKRAppError("failed to create swap chain!");
-        }
+        VK_CHECK(vkCreateSwapchainKHR(device.device(), &createInfo, nullptr, &swapChain),
+                 VKRAppError("failed to create swap chain!"));
 
         // we only specified a minimum number of images in the swap chain, so the implementation is
         // allowed to create a swap chain with more. That's why we'll first query the final number of
@@ -167,9 +165,8 @@ namespace lve {
             viewInfo.subresourceRange.baseArrayLayer = 0;
             viewInfo.subresourceRange.layerCount = 1;
 
-            if(vkCreateImageView(device.device(), &viewInfo, nullptr, &swapChainImageViews[i]) != VK_SUCCESS) {
-                throw VKRAppError("failed to create texture image view!");
-            }
+            VK_CHECK(vkCreateImageView(device.device(), &viewInfo, nullptr, &swapChainImageViews[i]),
+                     VKRAppError("failed to create texture image view!"));
         }
     }
 
@@ -227,9 +224,8 @@ namespace lve {
         renderPassInfo.dependencyCount = 1;
         renderPassInfo.pDependencies = &dependency;
 
-        if(vkCreateRenderPass(device.device(), &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS) {
-            throw VKRAppError("failed to create render pass!");
-        }
+        VK_CHECK(vkCreateRenderPass(device.device(), &renderPassInfo, nullptr, &renderPass),
+                 VKRAppError("failed to create render pass!"));
     }
 
     void LveSwapChain::createFramebuffers() {
@@ -247,14 +243,13 @@ namespace lve {
             framebufferInfo.height = swapChainExtente.height;
             framebufferInfo.layers = 1;
 
-            if(vkCreateFramebuffer(device.device(), &framebufferInfo, nullptr, &swapChainFramebuffers[i]) != VK_SUCCESS) {
-                throw VKRAppError("failed to create framebuffer!");
-            }
+            VK_CHECK(vkCreateFramebuffer(device.device(), &framebufferInfo, nullptr, &swapChainFramebuffers[i]),
+                     VKRAppError("failed to create framebuffer!"));
         }
     }
 
     void LveSwapChain::createDepthResources() {
-        VkFormat depthFormat = findDepthFormat();
+        const VkFormat depthFormat = findDepthFormat();
         const VkExtent2D swapChainExtente = getSwapChainExtent();
 
         depthImages.resize(imageCount());

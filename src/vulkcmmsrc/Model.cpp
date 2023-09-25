@@ -12,7 +12,7 @@ namespace lve {
     }
 
     void LveModel::createVertexBuffers(const std::vector<Vertex> &vertices) {
-        vertexCount = static_cast<uint32_t>(vertices.size());
+        vertexCount = C_UI32T(vertices.size());
         assert(vertexCount >= 3 && "Vertex count must be at least 3");
         const VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
         lveDevice.createBuffer(bufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
