@@ -104,6 +104,7 @@ namespace lve {
             glfwTerminate();
             throw VKRAppError("Failed to set window position centered");
         }
+        ttttttt.stop();
         static const auto wrepostime = ttttttt.elapsedMicroseconds();
 
         glfwShowWindow(window);
@@ -126,7 +127,7 @@ namespace lve {
     void LveWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR *surface) {
         VK_CHECK(glfwCreateWindowSurface(instance, window, nullptr, surface), VKRAppError("failed to create window surface!"));
     }
-    void LveWindow::framebufferResizeCallback(GLFWwindow *window, int width, int height) {
+    void LveWindow::framebufferResizeCallback(GLFWwindow *window, int width, int height) noexcept {
         auto lveWindow = reinterpret_cast<LveWindow *>(glfwGetWindowUserPointer(window));
         lveWindow->framebufferResized = true;
         lveWindow->width = width;

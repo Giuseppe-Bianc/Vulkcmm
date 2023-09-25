@@ -19,7 +19,7 @@ namespace lve {
         LveModel(const LveModel &) = delete;
         LveModel &operator=(const LveModel &) = delete;
 
-        void draw(VkCommandBuffer commandBuffer) const;
+        void draw(VkCommandBuffer commandBuffer) const noexcept;
         void bind(VkCommandBuffer commandBuffer);
 
     private:

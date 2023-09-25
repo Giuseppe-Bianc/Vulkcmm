@@ -34,16 +34,16 @@ namespace lve {
         LveWindow(const LveWindow &) = delete;
         LveWindow &operator=(const LveWindow &) = delete;
 
-        [[nodiscard]] bool shouldClose() { return (bool)(glfwWindowShouldClose(window)); }
-        [[nodiscard]] inline VkExtent2D getExtent() const { return {C_UI32T(width), C_UI32T(height)}; }
+        [[nodiscard]] bool shouldClose() noexcept { return static_cast<bool>(glfwWindowShouldClose(window)); }
+        [[nodiscard]] inline VkExtent2D getExtent() const noexcept { return {C_UI32T(width), C_UI32T(height)}; }
 
-        [[nodiscard]] inline bool wasWindowResized() const { return framebufferResized; }
-        void resetWindowResizedFlag() { framebufferResized = false; }
+        [[nodiscard]] inline bool wasWindowResized() const noexcept { return framebufferResized; }
+        void resetWindowResizedFlag() noexcept { framebufferResized = false; }
 
         void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
 
     private:
-        static void framebufferResizeCallback(GLFWwindow *window, int width, int height);
+        static void framebufferResizeCallback(GLFWwindow *window, int width, int height) noexcept;
         void initWindow();
 
         int width{};

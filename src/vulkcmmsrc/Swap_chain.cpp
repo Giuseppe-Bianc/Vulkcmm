@@ -1,8 +1,16 @@
 #include "Swap_chain.h"
 
 namespace lve {
+#pragma optimize("gt", on)
+    LveSwapChain::LveSwapChain(LveDevice &deviceRef, VkExtent2D extent) : device{deviceRef}, windowExtent{extent} { init(); }
+#pragma optimize("gt", on)
+    LveSwapChain::LveSwapChain(LveDevice &deviceRef, VkExtent2D extent, std::shared_ptr<LveSwapChain> previous)
+      : device{deviceRef}, windowExtent{extent}, oldSwapChain{previous} {
+        init();
+        oldSwapChain = nullptr;
+    }
 
-    LveSwapChain::LveSwapChain(LveDevice &deviceRef, VkExtent2D extent) : device{deviceRef}, windowExtent{extent} {
+    void LveSwapChain::init() {
         createSwapChain();
         createImageViews();
         createRenderPass();
@@ -38,18 +46,19 @@ namespace lve {
         }
     }
 
-    VkResult LveSwapChain::acquireNextImage(uint32_t *imageIndex) {
+    VkResult LveSwapChain::acquireNextImage(uint32_t *imageIndex) noexcept {
         vkWaitForFences(device.device(), 1, &inFlightFences[currentFrame], VK_TRUE, std::numeric_limits<uint64_t>::max());
 
-        VkResult result = vkAcquireNextImageKHR(device.device(), swapChain, std::numeric_limits<uint64_t>::max(),
-                                                imageAvailableSemaphores[currentFrame],  // must be a not signaled semaphore
-                                                VK_NULL_HANDLE, imageIndex);
+        const VkResult result = vkAcquireNextImageKHR(device.device(), swapChain, std::numeric_limits<uint64_t>::max(),
+                                                      imageAvailableSemaphores[currentFrame],  // must be a not signaled semaphore
+                                                      VK_NULL_HANDLE, imageIndex);
 
         return result;
     }
 
     VkResult LveSwapChain::submitCommandBuffers(const VkCommandBuffer *buffers, const uint32_t *imageIndex) {
-        if(imagesInFlight[*imageIndex] != VK_NULL_HANDLE) [[unlikely]] {
+        if(imageIndex == nullptr) [[unlikely]] { return VK_ERROR_UNKNOWN; }
+        if(imagesInFlight.at(*imageIndex) != VK_NULL_HANDLE) [[unlikely]] {
             vkWaitForFences(device.device(), 1, &imagesInFlight[*imageIndex], VK_TRUE, UINT64_MAX);
         }
         imagesInFlight[*imageIndex] = inFlightFences[currentFrame];
@@ -86,7 +95,7 @@ namespace lve {
 
         presentInfo.pImageIndices = imageIndex;
 
-        auto result = vkQueuePresentKHR(device.presentQueue(), &presentInfo);
+        const auto result = vkQueuePresentKHR(device.presentQueue(), &presentInfo);
 
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 
@@ -96,8 +105,8 @@ namespace lve {
     void LveSwapChain::createSwapChain() {
         const SwapChainSupportDetails swapChainSupport = device.getSwapChainSupport();
 
-        VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
-        VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
+        const VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
+        const VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
         const VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities);
 
         uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
@@ -135,7 +144,7 @@ namespace lve {
         createInfo.presentMode = presentMode;
         createInfo.clipped = VK_TRUE;
 
-        createInfo.oldSwapchain = VK_NULL_HANDLE;
+        createInfo.oldSwapchain = oldSwapChain == nullptr ? VK_NULL_HANDLE : oldSwapChain->swapChain;
 
         VK_CHECK(vkCreateSwapchainKHR(device.device(), &createInfo, nullptr, &swapChain),
                  VKRAppError("failed to create swap chain!"));
@@ -217,7 +226,7 @@ namespace lve {
         std::array<VkAttachmentDescription, 2> attachments = {colorAttachment, depthAttachment};
         VkRenderPassCreateInfo renderPassInfo = {};
         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-        renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+        renderPassInfo.attachmentCount = NC_UI32T(attachments.size());
         renderPassInfo.pAttachments = attachments.data();
         renderPassInfo.subpassCount = 1;
         renderPassInfo.pSubpasses = &subpass;
@@ -233,7 +242,7 @@ namespace lve {
         for(size_t i = 0; i < imageCount(); i++) {
             std::array<VkImageView, 2> attachments = {swapChainImageViews[i], depthImageViews[i]};
 
-            VkExtent2D swapChainExtente = getSwapChainExtent();
+            const VkExtent2D swapChainExtente = getSwapChainExtent();
             VkFramebufferCreateInfo framebufferInfo = {};
             framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
             framebufferInfo.renderPass = renderPass;
@@ -286,9 +295,8 @@ namespace lve {
             viewInfo.subresourceRange.baseArrayLayer = 0;
             viewInfo.subresourceRange.layerCount = 1;
 
-            if(vkCreateImageView(device.device(), &viewInfo, nullptr, &depthImageViews[i]) != VK_SUCCESS) {
-                throw VKRAppError("failed to create texture image view!");
-            }
+            VK_CHECK(vkCreateImageView(device.device(), &viewInfo, nullptr, &depthImageViews[i]),
+                     VKRAppError("failed to create texture image view!"));
         }
     }
 
@@ -314,7 +322,8 @@ namespace lve {
         }
     }
 
-    VkSurfaceFormatKHR LveSwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats) const {
+    VkSurfaceFormatKHR LveSwapChain::chooseSwapSurfaceFormat(
+        const std::vector<VkSurfaceFormatKHR> &availableFormats) const noexcept {
         for(const auto &availableFormat : availableFormats) {
             if(availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB &&
                availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
@@ -344,7 +353,7 @@ namespace lve {
         return VK_PRESENT_MODE_FIFO_KHR;
     }
 
-    VkExtent2D LveSwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) const {
+    VkExtent2D LveSwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) const noexcept {
         if(capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
             return capabilities.currentExtent;
         } else {

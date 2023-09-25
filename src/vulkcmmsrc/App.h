@@ -12,10 +12,12 @@ namespace lve {
         static constexpr int HEIGHT = 600;
 
         FirstApp();
-        ~FirstApp();
+        ~FirstApp() noexcept;
 
         FirstApp(const FirstApp &) = delete;
         FirstApp &operator=(const FirstApp &) = delete;
+        FirstApp(FirstApp &&) = delete;
+        FirstApp &operator=(FirstApp &&) = delete;
 
         void run();
 
@@ -24,11 +26,12 @@ namespace lve {
         void createPipelineLayout();
         void createPipeline();
         void createCommandBuffers();
+        void freeCommandBuffers() noexcept;
         void drawFrame();
         void recreateSwapChain();
         void recordCommandBuffer(int imageIndex);
 
-        LveWindow lveWindow{WIDTH, HEIGHT, "Hello Vulkan!"};
+        LveWindow lveWindow{WIDTH, HEIGHT, "Vulkan Tutorial"};
         LveDevice lveDevice{lveWindow};
         std::unique_ptr<LveSwapChain> lveSwapChain;
         std::unique_ptr<LvePipeline> lvePipeline;

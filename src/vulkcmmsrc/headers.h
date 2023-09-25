@@ -129,9 +129,9 @@ template <typename OStream, typename T, glm::qualifier Q> inline OStream &operat
 
 #define VK_CHECK(f, trowable)                                                                                                    \
     do {                                                                                                                         \
-        VkResult res = (f);                                                                                                      \
+        const VkResult res = (f);                                                                                                \
         if(res != VK_SUCCESS) [[unlikely]] {                                                                                     \
-            auto loc = std::source_location::current();                                                                          \
+            const auto loc = std::source_location::current();                                                                    \
             LCRITICAL("Fatal : VkResult is \"{0}\" from {1} in {2} at line {3}", #f, string_VkResult(res), loc.file_name(),      \
                       loc.line());                                                                                               \
             throw trowable;                                                                                                      \

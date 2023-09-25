@@ -25,7 +25,7 @@ namespace lve {
         vkUnmapMemory(lveDevice.device(), vertexBufferMemory);
     }
 
-    void LveModel::draw(VkCommandBuffer commandBuffer) const { vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0); }
+    void LveModel::draw(VkCommandBuffer commandBuffer) const noexcept { vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0); }
 
     void LveModel::bind(VkCommandBuffer commandBuffer) {
         static const std::vector<VkBuffer> buffers = {vertexBuffer};

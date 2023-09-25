@@ -7,29 +7,34 @@ namespace lve {
     class LveSwapChain {
     public:
         static constexpr inline int MAX_FRAMES_IN_FLIGHT = 2;
-#pragma optimize("gt", on)
+
         LveSwapChain(LveDevice &deviceRef, VkExtent2D windowExtent);
+        LveSwapChain(LveDevice &deviceRef, VkExtent2D windowExtent, std::shared_ptr<LveSwapChain> previous);
+
         ~LveSwapChain();
 
         LveSwapChain(const LveSwapChain &) = delete;
         LveSwapChain &operator=(const LveSwapChain &) = delete;
 
-        [[nodiscard]] inline VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
-        [[nodiscard]] inline VkRenderPass getRenderPass() { return renderPass; }
-        [[nodiscard]] inline VkImageView getImageView(int index) { return swapChainImageViews[index]; }
-        [[nodiscard]] inline size_t imageCount() const { return swapChainImages.size(); }
-        [[nodiscard]] inline VkFormat getSwapChainImageFormat() const { return swapChainImageFormat; }
-        [[nodiscard]] inline VkExtent2D getSwapChainExtent() const { return swapChainExtent; }
-        [[nodiscard]] inline uint32_t width() const { return swapChainExtent.width; }
-        [[nodiscard]] inline uint32_t height() const { return swapChainExtent.height; }
+        [[nodiscard]] inline VkFramebuffer getFrameBuffer(int index) noexcept { return swapChainFramebuffers[index]; }
+        [[nodiscard]] inline VkRenderPass getRenderPass() noexcept { return renderPass; }
+        [[nodiscard]] inline VkImageView getImageView(int index) noexcept { return swapChainImageViews[index]; }
+        [[nodiscard]] inline size_t imageCount() const noexcept { return swapChainImages.size(); }
+        [[nodiscard]] inline VkFormat getSwapChainImageFormat() const noexcept { return swapChainImageFormat; }
+        [[nodiscard]] inline VkExtent2D getSwapChainExtent() const noexcept { return swapChainExtent; }
+        [[nodiscard]] inline uint32_t width() const noexcept { return swapChainExtent.width; }
+        [[nodiscard]] inline uint32_t height() const noexcept { return swapChainExtent.height; }
 
-        [[nodiscard]] inline float extentAspectRatio() const { return C_F(swapChainExtent.width) / C_F(swapChainExtent.height); }
+        [[nodiscard]] inline float extentAspectRatio() const noexcept {
+            return C_F(swapChainExtent.width) / C_F(swapChainExtent.height);
+        }
         VkFormat findDepthFormat();
 
-        VkResult acquireNextImage(uint32_t *imageIndex);
+        VkResult acquireNextImage(uint32_t *imageIndex) noexcept;
         VkResult submitCommandBuffers(const VkCommandBuffer *buffers, const uint32_t *imageIndex);
 
     private:
+        void init();
         void createSwapChain();
         void createImageViews();
         void createDepthResources();
@@ -38,9 +43,10 @@ namespace lve {
         void createSyncObjects();
 
         // Helper functions
-        [[nodiscard]] VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats) const;
+        [[nodiscard]] VkSurfaceFormatKHR chooseSwapSurfaceFormat(
+            const std::vector<VkSurfaceFormatKHR> &availableFormats) const noexcept;
         [[nodiscard]] VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes) const;
-        [[nodiscard]] VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) const;
+        [[nodiscard]] VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) const noexcept;
 
         VkFormat swapChainImageFormat;
         VkExtent2D swapChainExtent;
@@ -58,6 +64,7 @@ namespace lve {
         VkExtent2D windowExtent;
 
         VkSwapchainKHR swapChain;
+        std::shared_ptr<LveSwapChain> oldSwapChain;
 
         std::vector<VkSemaphore> imageAvailableSemaphores;
         std::vector<VkSemaphore> renderFinishedSemaphores;

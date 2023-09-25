@@ -44,7 +44,8 @@ namespace lve {
     }
 #pragma optimize("gt", on)
     VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
-                                          const VkAllocationCallbacks *pAllocator, VkDebugUtilsMessengerEXT *pDebugMessenger) {
+                                          const VkAllocationCallbacks *pAllocator,
+                                          VkDebugUtilsMessengerEXT *pDebugMessenger) noexcept {
         // NOLINT
         auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
         if(func != nullptr) {
@@ -55,7 +56,7 @@ namespace lve {
     }
 #pragma optimize("gt", on)
     void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger,
-                                       const VkAllocationCallbacks *pAllocator) {
+                                       const VkAllocationCallbacks *pAllocator) noexcept {
         // NOLINT
         auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
         if(func != nullptr) { func(instance, debugMessenger, pAllocator); }
@@ -103,14 +104,14 @@ namespace lve {
         createInfo.enabledExtensionCount = C_UI32T(extensions.size());
         createInfo.ppEnabledExtensionNames = extensions.data();
 
-        VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
+        VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
         if(enableValidationLayers) {
             createInfo.enabledLayerCount = C_UI32T(validationLayers.size());
             createInfo.ppEnabledLayerNames = validationLayers.data();
 
             populateDebugMessengerCreateInfo(debugCreateInfo);
             // NOLINT
-            createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
+            createInfo.pNext = static_cast<VkDebugUtilsMessengerCreateInfoEXT *>(&debugCreateInfo);
         } else {
             createInfo.enabledLayerCount = 0;
             createInfo.pNext = nullptr;
@@ -148,8 +149,8 @@ namespace lve {
         std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
         std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily, indices.presentFamily};
 
-        float queuePriority = 1.0f;
-        for(uint32_t queueFamily : uniqueQueueFamilies) {
+        constexpr float queuePriority = 1.0f;
+        for(const uint32_t queueFamily : uniqueQueueFamilies) {
             VkDeviceQueueCreateInfo queueCreateInfo = {};
             queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
             queueCreateInfo.queueFamilyIndex = queueFamily;
@@ -180,25 +181,21 @@ namespace lve {
             createInfo.enabledLayerCount = 0;
         }
 
-        if(vkCreateDevice(physicalDevice, &createInfo, nullptr, &device_) != VK_SUCCESS) {
-            throw VKRAppError("failed to create logical device!");
-        }
+        VK_CHECK(vkCreateDevice(physicalDevice, &createInfo, nullptr, &device_), VKRAppError("failed to create logical device!"));
 
         vkGetDeviceQueue(device_, indices.graphicsFamily, 0, &graphicsQueue_);
         vkGetDeviceQueue(device_, indices.presentFamily, 0, &presentQueue_);
     }
 
     void LveDevice::createCommandPool() {
-        QueueFamilyIndices queueFamilyIndices = findPhysicalQueueFamilies();
+        const QueueFamilyIndices queueFamilyIndices = findPhysicalQueueFamilies();
 
         VkCommandPoolCreateInfo poolInfo = {};
         poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
         poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily;
         poolInfo.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-        if(vkCreateCommandPool(device_, &poolInfo, nullptr, &commandPool) != VK_SUCCESS) {
-            throw VKRAppError("failed to create command pool!");
-        }
+        VK_CHECK(vkCreateCommandPool(device_, &poolInfo, nullptr, &commandPool), VKRAppError("failed to create command pool!"));
     }
 
     void LveDevice::createSurface() { window.createWindowSurface(instance, &surface_); }
@@ -206,7 +203,7 @@ namespace lve {
     [[nodiscard]] bool LveDevice::isDeviceSuitable(VkPhysicalDevice device) {
         const QueueFamilyIndices indices = findQueueFamilies(device);
 
-        bool extensionsSupported = checkDeviceExtensionSupport(device);
+        const bool extensionsSupported = checkDeviceExtensionSupport(device);
 
         bool swapChainAdequate = false;
         if(extensionsSupported) {
@@ -220,7 +217,7 @@ namespace lve {
         return indices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
     }
 
-    void LveDevice::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo) const {
+    void LveDevice::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo) const noexcept {
         createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
         createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
@@ -414,7 +411,7 @@ namespace lve {
         vkBindBufferMemory(device_, buffer, bufferMemory, 0);
     }
 
-    VkCommandBuffer LveDevice::beginSingleTimeCommands() {
+    VkCommandBuffer LveDevice::beginSingleTimeCommands() noexcept {
         VkCommandBufferAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
         allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -432,7 +429,7 @@ namespace lve {
         return commandBuffer;
     }
 
-    void LveDevice::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
+    void LveDevice::endSingleTimeCommands(VkCommandBuffer commandBuffer) noexcept {
         vkEndCommandBuffer(commandBuffer);
 
         VkSubmitInfo submitInfo{};
@@ -446,7 +443,7 @@ namespace lve {
         vkFreeCommandBuffers(device_, commandPool, 1, &commandBuffer);
     }
 
-    void LveDevice::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
+    void LveDevice::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) noexcept {
         VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
         VkBufferCopy copyRegion{};
@@ -458,7 +455,8 @@ namespace lve {
         endSingleTimeCommands(commandBuffer);
     }
 
-    void LveDevice::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount) {
+    void LveDevice::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height,
+                                      uint32_t layerCount) noexcept {
         VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
         VkBufferImageCopy region{};
