@@ -128,7 +128,7 @@ namespace lve {
         VK_CHECK(glfwCreateWindowSurface(instance, window, nullptr, surface), VKRAppError("failed to create window surface!"));
     }
     void LveWindow::framebufferResizeCallback(GLFWwindow *window, int width, int height) noexcept {
-        auto lveWindow = reinterpret_cast<LveWindow *>(glfwGetWindowUserPointer(window));
+        auto lveWindow = static_cast<LveWindow *>(glfwGetWindowUserPointer(window));
         lveWindow->framebufferResized = true;
         lveWindow->width = width;
         lveWindow->height = height;

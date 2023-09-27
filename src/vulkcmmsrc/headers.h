@@ -1,7 +1,6 @@
 #pragma once
 // NOLINTBEGIN
 #define GLFW_PLATFORM_WIN32
-// #define GLFW_EXPOSE_NATIVE_WIN32
 #define GLM_FORCE_SILENT_WARNINGS
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -16,9 +15,14 @@
 #define GLM_FORCE_PRECISION_HIGHP_FLOAT
 #ifdef _MSC_VER
 // Microsoft Visual C++ Compiler
-#pragma warning(push)
-#pragma warning(disable : 6386 6385 4005 26481 4459)
+#define DISABLE_WARNINGS_PUSH(...) __pragma(warning(push)) __pragma(warning(disable : __VA_ARGS__))
+#define DISABLE_WARNINGS_POP() __pragma(warning(pop))
+#else
+#define DISABLE_WARNINGS_PUSH(...)
+#define DISABLE_WARNINGS_POP()
 #endif
+
+DISABLE_WARNINGS_PUSH(6386 6385 4005 26481 4459)
 // clang-format off
 #include <cassert>
 #include <algorithm>
@@ -81,10 +85,7 @@
 // clang-format on
 #include "casts.h"
 // Restore warning levels.
-#ifdef _MSC_VER
-// Microsoft Visual C++ Compiler
-#pragma warning(pop)
-#endif
+DISABLE_WARNINGS_POP()
 
 #pragma optimize("gt", on)
 [[nodiscard]] static constexpr auto calcolaCentro(const int &width, const int &w) noexcept { return (width - w) / 2; }

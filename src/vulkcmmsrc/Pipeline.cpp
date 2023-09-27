@@ -1,12 +1,6 @@
 #include "Pipeline.h"
 #include "Model.h"
 
-// std
-#include <cassert>
-#include <fstream>
-#include <iostream>
-#include <stdexcept>
-
 namespace lve {
 
     LvePipeline::LvePipeline(LveDevice &device, const std::string &vertFilepath, const std::string &fragFilepath,

@@ -31,7 +31,7 @@ namespace lve {
         void recreateSwapChain();
         void recordCommandBuffer(int imageIndex);
 
-        LveWindow lveWindow{WIDTH, HEIGHT, "Vulkan Tutorial"};
+        LveWindow lveWindow{w, h, "Vulkan Tutorial"};
         LveDevice lveDevice{lveWindow};
         std::unique_ptr<LveSwapChain> lveSwapChain;
         std::unique_ptr<LvePipeline> lvePipeline;

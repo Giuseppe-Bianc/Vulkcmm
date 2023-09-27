@@ -34,7 +34,7 @@ namespace lve {
         LveWindow(const LveWindow &) = delete;
         LveWindow &operator=(const LveWindow &) = delete;
 
-        [[nodiscard]] bool shouldClose() noexcept { return static_cast<bool>(glfwWindowShouldClose(window)); }
+        [[nodiscard]] bool shouldClose() noexcept { return gsl::narrow_cast<bool>(glfwWindowShouldClose(window)); }
         [[nodiscard]] inline VkExtent2D getExtent() const noexcept { return {C_UI32T(width), C_UI32T(height)}; }
 
         [[nodiscard]] inline bool wasWindowResized() const noexcept { return framebufferResized; }
