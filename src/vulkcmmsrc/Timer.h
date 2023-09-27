@@ -6,7 +6,6 @@ inline static constexpr long double MILLISENCONDSFACTOR = 1'000'000.0;
 inline static constexpr long double SENCONDSFACTOR = 1'000'000'000.0;
 class Timer {
 public:
-#pragma optimize("gt", on)
     inline Timer() noexcept : start_time(std::chrono::high_resolution_clock::now()) {}
     ~Timer() = default;
     Timer(const Timer &other) = delete;              // Delete copy constructor

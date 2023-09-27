@@ -15,16 +15,23 @@ namespace lve {
 
         LveSwapChain(const LveSwapChain &) = delete;
         LveSwapChain &operator=(const LveSwapChain &) = delete;
-
+#pragma optimize("gt", on)
         [[nodiscard]] inline VkFramebuffer getFrameBuffer(int index) noexcept { return swapChainFramebuffers[index]; }
+#pragma optimize("gt", on)
         [[nodiscard]] inline VkRenderPass getRenderPass() noexcept { return renderPass; }
+#pragma optimize("gt", on)
         [[nodiscard]] inline VkImageView getImageView(int index) noexcept { return swapChainImageViews[index]; }
+#pragma optimize("gt", on)
         [[nodiscard]] inline size_t imageCount() const noexcept { return swapChainImages.size(); }
+#pragma optimize("gt", on)
         [[nodiscard]] inline VkFormat getSwapChainImageFormat() const noexcept { return swapChainImageFormat; }
+#pragma optimize("gt", on)
         [[nodiscard]] inline VkExtent2D getSwapChainExtent() const noexcept { return swapChainExtent; }
+#pragma optimize("gt", on)
         [[nodiscard]] inline uint32_t width() const noexcept { return swapChainExtent.width; }
+#pragma optimize("gt", on)
         [[nodiscard]] inline uint32_t height() const noexcept { return swapChainExtent.height; }
-
+#pragma optimize("gt", on)
         [[nodiscard]] inline float extentAspectRatio() const noexcept {
             return C_F(swapChainExtent.width) / C_F(swapChainExtent.height);
         }

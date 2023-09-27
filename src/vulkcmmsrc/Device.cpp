@@ -101,12 +101,12 @@ namespace lve {
         createInfo.pApplicationInfo = &appInfo;
 
         auto extensions = getRequiredExtensions();
-        createInfo.enabledExtensionCount = C_UI32T(extensions.size());
+        createInfo.enabledExtensionCount = NC_UI32T(extensions.size());
         createInfo.ppEnabledExtensionNames = extensions.data();
 
         VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
         if(enableValidationLayers) {
-            createInfo.enabledLayerCount = C_UI32T(validationLayers.size());
+            createInfo.enabledLayerCount = NC_UI32T(validationLayers.size());
             createInfo.ppEnabledLayerNames = validationLayers.data();
 
             populateDebugMessengerCreateInfo(debugCreateInfo);
@@ -164,17 +164,17 @@ namespace lve {
         VkDeviceCreateInfo createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 
-        createInfo.queueCreateInfoCount = C_UI32T(queueCreateInfos.size());
+        createInfo.queueCreateInfoCount = NC_UI32T(queueCreateInfos.size());
         createInfo.pQueueCreateInfos = queueCreateInfos.data();
 
         createInfo.pEnabledFeatures = &deviceFeatures;
-        createInfo.enabledExtensionCount = C_UI32T(deviceExtensions.size());
+        createInfo.enabledExtensionCount = NC_UI32T(deviceExtensions.size());
         createInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
         // might not really be necessary anymore because device specific validation layers
         // have been deprecated
         if(enableValidationLayers) {
-            createInfo.enabledLayerCount = C_UI32T(validationLayers.size());
+            createInfo.enabledLayerCount = NC_UI32T(validationLayers.size());
             createInfo.ppEnabledLayerNames = validationLayers.data();
         } else {
             createInfo.enabledLayerCount = 0;

@@ -246,7 +246,7 @@ namespace lve {
             VkFramebufferCreateInfo framebufferInfo = {};
             framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
             framebufferInfo.renderPass = renderPass;
-            framebufferInfo.attachmentCount = C_UI32T(attachments.size());
+            framebufferInfo.attachmentCount = NC_UI32T(attachments.size());
             framebufferInfo.pAttachments = attachments.data();
             framebufferInfo.width = swapChainExtente.width;
             framebufferInfo.height = swapChainExtente.height;

@@ -37,8 +37,8 @@ namespace lve {
         assert(configInfo.renderPass != VK_NULL_HANDLE &&
                "Cannot create graphics pipeline: no renderPass provided in configInfo");
 
-        auto vertCode = readFile(vertFilepath);
-        auto fragCode = readFile(fragFilepath);
+        const auto vertCode = readFile(vertFilepath);
+        const auto fragCode = readFile(fragFilepath);
 
         createShaderModule(vertCode, &vertShaderModule);
         createShaderModule(fragCode, &fragShaderModule);
@@ -62,8 +62,8 @@ namespace lve {
         auto attributeDescriptions = LveModel::Vertex::getAttributeDescriptions();
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        vertexInputInfo.vertexAttributeDescriptionCount = C_UI32T(attributeDescriptions.size());
-        vertexInputInfo.vertexBindingDescriptionCount = C_UI32T(bindingDescriptions.size());
+        vertexInputInfo.vertexAttributeDescriptionCount = NC_UI32T(attributeDescriptions.size());
+        vertexInputInfo.vertexBindingDescriptionCount = NC_UI32T(bindingDescriptions.size());
         vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
         vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
 
@@ -94,7 +94,7 @@ namespace lve {
         VkShaderModuleCreateInfo createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
         createInfo.codeSize = code.size();
-        createInfo.pCode = C_CPCU32T(code.data());
+        createInfo.pCode = NC_CPCU32T(code.data());
 
         VK_CHECK(vkCreateShaderModule(lveDevice.device(), &createInfo, nullptr, shaderModule),
                  VKRAppError("failed to create shader module"));

@@ -12,7 +12,7 @@ namespace lve {
     }
 
     void LveModel::createVertexBuffers(const std::vector<Vertex> &vertices) {
-        vertexCount = C_UI32T(vertices.size());
+        vertexCount = NC_UI32T(vertices.size());
         assert(vertexCount >= 3 && "Vertex count must be at least 3");
         const VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
         lveDevice.createBuffer(bufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
@@ -21,13 +21,13 @@ namespace lve {
 
         void *data = nullptr;
         vkMapMemory(lveDevice.device(), vertexBufferMemory, 0, bufferSize, 0, &data);
-        memcpy(data, vertices.data(), C_ST(bufferSize));
+        memcpy(data, vertices.data(), NC_ST(bufferSize));
         vkUnmapMemory(lveDevice.device(), vertexBufferMemory);
     }
 
     void LveModel::draw(VkCommandBuffer commandBuffer) const noexcept { vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0); }
 
-    void LveModel::bind(VkCommandBuffer commandBuffer) {
+    void LveModel::bind(VkCommandBuffer commandBuffer) noexcept {
         static const std::vector<VkBuffer> buffers = {vertexBuffer};
         static const std::vector<VkDeviceSize> offsets = {0};
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers.data(), offsets.data());

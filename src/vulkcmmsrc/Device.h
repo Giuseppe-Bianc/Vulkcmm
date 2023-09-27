@@ -16,7 +16,7 @@ namespace lve {
         bool graphicsFamilyHasValue = false;
         bool presentFamilyHasValue = false;
 #pragma optimize("gt", on)
-        [[nodiscard]] bool isComplete() const noexcept { return graphicsFamilyHasValue && presentFamilyHasValue; }
+        [[nodiscard]] inline bool isComplete() const noexcept { return graphicsFamilyHasValue && presentFamilyHasValue; }
     };
 
     class LveDevice {
