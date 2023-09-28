@@ -40,6 +40,12 @@ namespace lve {
         VkResult acquireNextImage(uint32_t *imageIndex) noexcept;
         VkResult submitCommandBuffers(const VkCommandBuffer *buffers, const uint32_t *imageIndex);
 
+#pragma optimize("gt", on)
+        [[nodiscard]] inline bool compareSwapFormats(const LveSwapChain &swapChaine) const noexcept {
+            return swapChaine.swapChainDepthFormat == swapChainDepthFormat &&
+                   swapChaine.swapChainImageFormat == swapChainImageFormat;
+        }
+
     private:
         void init();
         void createSwapChain();
@@ -56,6 +62,7 @@ namespace lve {
         [[nodiscard]] VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) const noexcept;
 
         VkFormat swapChainImageFormat;
+        VkFormat swapChainDepthFormat;
         VkExtent2D swapChainExtent;
 
         std::vector<VkFramebuffer> swapChainFramebuffers;
