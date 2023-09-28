@@ -29,9 +29,8 @@ namespace lve {
         pipelineLayoutInfo.pSetLayouts = nullptr;
         pipelineLayoutInfo.pushConstantRangeCount = 1;
         pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
-        if(vkCreatePipelineLayout(lveDevice.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create pipeline layout!");
-        }
+        VK_CHECK(vkCreatePipelineLayout(lveDevice.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout),
+                 VKRAppError("failed to create pipeline layout!"));
     }
 
     void SimpleRenderSystem::createPipeline(VkRenderPass renderPass) {

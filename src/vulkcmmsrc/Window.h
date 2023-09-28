@@ -27,9 +27,9 @@ namespace lve {
 
     class LveWindow {
     public:
-        LveWindow() = default;
+        LveWindow() noexcept = default;
         LveWindow(int w, int h, const std::string &name);
-        ~LveWindow();
+        ~LveWindow() noexcept;
 
         LveWindow(const LveWindow &) = delete;
         LveWindow &operator=(const LveWindow &) = delete;

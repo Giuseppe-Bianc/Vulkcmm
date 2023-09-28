@@ -9,7 +9,7 @@ namespace lve {
 
     LveWindow::LveWindow(int ww, int hh, const std::string &name) : width{ww}, height{hh}, windowName{name} { initWindow(); }
 
-    LveWindow::~LveWindow() {
+    LveWindow::~LveWindow() noexcept {
         glfwDestroyWindow(window);
         glfwTerminate();
     }

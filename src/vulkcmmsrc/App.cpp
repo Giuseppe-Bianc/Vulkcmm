@@ -5,8 +5,6 @@ namespace lve {
 
     FirstApp::FirstApp() { loadGameObjects(); }
 
-    FirstApp::~FirstApp() {}
-
     void FirstApp::run() {
         SimpleRenderSystem simpleRenderSystem{lveDevice, lveRenderer.getSwapChainRenderPass()};
 

@@ -13,7 +13,7 @@ namespace lve {
         static constexpr int HEIGHT = 600;
 
         FirstApp();
-        ~FirstApp() noexcept;
+        ~FirstApp() noexcept = default;
 
         FirstApp(const FirstApp &) = delete;
         FirstApp &operator=(const FirstApp &) = delete;

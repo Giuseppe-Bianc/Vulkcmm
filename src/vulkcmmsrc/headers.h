@@ -139,17 +139,17 @@ template <typename OStream, typename T, glm::qualifier Q> inline OStream &operat
         }                                                                                                                        \
                                                                                                                                  \
     } while(0)
-/*
-#define VK_CHECK_SWAPCHAIN(f) \
-    do { \
-        VkResult res = (f); \
-        if(res != VK_SUCCESS || res != VK_SUBOPTIMAL_KHR || res != VK_ERROR_OUT_OF_DATE_KHR) [[unlikely]] { \
-            constexpr auto loc = std::source_location::current(); \
-            LCRITICAL("Fatal : VkResult is \"{0}\" from{1} in {2} at line {3}", #f, string_VkResult(res), loc.file_name(), \
-                      loc.line()); \
-            assert(result_ == VK_SUCCESS || result_ == VK_SUBOPTIMAL_KHR || result_ == VK_ERROR_OUT_OF_DATE_KHR); \
-        } \ } while(0)
-*/
+
+#define VK_CHECK_SWAPCHAIN(f, trowable)                                                                                          \
+    do {                                                                                                                         \
+        VkResult res = (f);                                                                                                      \
+        if(res != VK_SUCCESS && res != VK_SUBOPTIMAL_KHR) [[unlikely]] {                                                         \
+            constexpr auto loc = std::source_location::current();                                                                \
+            LCRITICAL("Fatal : VkResult is \"{0}\" from{1} in {2} at line {3}", #f, string_VkResult(res), loc.file_name(),       \
+                      loc.line());                                                                                               \
+            throw trowable;                                                                                                      \
+        }                                                                                                                        \
+    } while(0)
 
 /*template <typename EnumType> static constexpr std::string VulkanEnumToString(EnumType value) {
     static_assert(std::is_enum_v<EnumType>, "EnumType deve essere un tipo di enumerazione.");

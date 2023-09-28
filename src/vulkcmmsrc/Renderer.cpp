@@ -24,7 +24,7 @@ namespace lve {
             lveSwapChain = std::make_unique<LveSwapChain>(lveDevice, extent, oldSwapChain);
 
             if(!oldSwapChain->compareSwapFormats(*lveSwapChain.get())) {
-                throw std::runtime_error("Swap chain image(or depth) format has changed!");
+                throw VKRAppError("Swap chain image(or depth) format has changed!");
             }
         }
     }
@@ -38,9 +38,8 @@ namespace lve {
         allocInfo.commandPool = lveDevice.getCommandPool();
         allocInfo.commandBufferCount = NC_UI32T(commandBuffers.size());
 
-        if(vkAllocateCommandBuffers(lveDevice.device(), &allocInfo, commandBuffers.data()) != VK_SUCCESS) {
-            throw std::runtime_error("failed to allocate command buffers!");
-        }
+        VK_CHECK(vkAllocateCommandBuffers(lveDevice.device(), &allocInfo, commandBuffers.data()),
+                 VKRAppError("failed to allocate command buffers!"));
     }
 
     void LveRenderer::freeCommandBuffers() noexcept {
@@ -58,33 +57,28 @@ namespace lve {
             return nullptr;
         }
 
-        if(result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-            throw std::runtime_error("failed to acquire swap chain image!");
-        }
-
+        VK_CHECK_SWAPCHAIN(result, VKRAppError("failed to acquire swap chain image!"));
         isFrameStarted = true;
 
         auto commandBuffer = getCurrentCommandBuffer();
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-        if(vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
-            throw std::runtime_error("failed to begin recording command buffer!");
-        }
+        VK_CHECK(vkBeginCommandBuffer(commandBuffer, &beginInfo), VKRAppError("failed to begin recording command buffer!"));
         return commandBuffer;
     }
 
     void LveRenderer::endFrame() {
         assert(isFrameStarted && "Can't call endFrame while frame is not in progress");
         auto commandBuffer = getCurrentCommandBuffer();
-        if(vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) { throw std::runtime_error("failed to record command buffer!"); }
+        VK_CHECK(vkEndCommandBuffer(commandBuffer), VKRAppError("failed to record command buffer!"));
 
         const auto result = lveSwapChain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
         if(result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || lveWindow.wasWindowResized()) {
             lveWindow.resetWindowResizedFlag();
             recreateSwapChain();
         } else if(result != VK_SUCCESS) {
-            throw std::runtime_error("failed to present swap chain image!");
+            throw VKRAppError("failed to present swap chain image!");
         }
 
         isFrameStarted = false;
