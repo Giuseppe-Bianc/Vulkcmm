@@ -24,11 +24,16 @@ namespace lve {
 
     private:
         void loadGameObjects();
+        void calculateFrameRate();
 
         LveWindow lveWindow{w, h, "Vulkan Tutorial"};
         LveDevice lveDevice{lveWindow};
         LveRenderer lveRenderer{lveWindow, lveDevice};
 
         std::vector<LveGameObject> gameObjects;
+        double currentTime{};
+        double lastTime{};
+        long double frameTime{};
+        int numFrames;
     };
 }  // namespace lve

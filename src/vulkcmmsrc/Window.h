@@ -8,7 +8,7 @@ static inline void errorCallback(int error, const char *description) { GLWFERR(e
 
 #pragma optimize("gt", on)
 static inline void keyCallback(GLFWwindow *window, int key, [[maybe_unused]] int scancode, int action,
-                               [[maybe_unused]] int mods) noexcept {
+                               [[maybe_unused]] int mods) {
     switch(key) {
     case GLFW_KEY_ESCAPE:
         if(action == GLFW_PRESS) {
@@ -34,7 +34,7 @@ namespace lve {
         LveWindow(const LveWindow &) = delete;
         LveWindow &operator=(const LveWindow &) = delete;
 #pragma optimize("gt", on)
-        [[nodiscard]] bool shouldClose() noexcept { return gsl::narrow_cast<bool>(glfwWindowShouldClose(window)); }
+        [[nodiscard]] bool shouldClose() noexcept { return NC_BOOL(glfwWindowShouldClose(window)); }
 #pragma optimize("gt", on)
         [[nodiscard]] inline VkExtent2D getExtent() const noexcept { return {C_UI32T(width), C_UI32T(height)}; }
 #pragma optimize("gt", on)
@@ -42,7 +42,7 @@ namespace lve {
         void resetWindowResizedFlag() noexcept { framebufferResized = false; }
 
         void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
-
+        void setTitle(const char *title) noexcept { glfwSetWindowTitle(window, title); }
     private:
         static void framebufferResizeCallback(GLFWwindow *window, int width, int height) noexcept;
         void initWindow();

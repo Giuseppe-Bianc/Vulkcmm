@@ -34,7 +34,7 @@ namespace lve {
             vkFreeMemory(device.device(), depthImageMemorys[i], nullptr);
         }
 
-        for(auto framebuffer : swapChainFramebuffers) { vkDestroyFramebuffer(device.device(), framebuffer, nullptr); }
+        for(const auto framebuffer : swapChainFramebuffers) { vkDestroyFramebuffer(device.device(), framebuffer, nullptr); }
 
         vkDestroyRenderPass(device.device(), renderPass, nullptr);
 
