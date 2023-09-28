@@ -13,11 +13,11 @@ namespace lve {
         LveRenderer &operator=(const LveRenderer &) = delete;
 
         [[nodiscard]] inline VkRenderPass getSwapChainRenderPass() const noexcept { return lveSwapChain->getRenderPass(); }
-        bool isFrameInProgress() const noexcept { return isFrameStarted; }
+        [[nodiscard]] bool isFrameInProgress() const noexcept { return isFrameStarted; }
 
         [[nodiscard]] inline VkCommandBuffer getCurrentCommandBuffer() const noexcept {
             assert(isFrameStarted && "Cannot get command buffer when frame not in progress");
-            return commandBuffers[currentFrameIndex];
+            return commandBuffers.at(currentFrameIndex);
         }
 
         [[nodiscard]] inline int getFrameIndex() const noexcept {
