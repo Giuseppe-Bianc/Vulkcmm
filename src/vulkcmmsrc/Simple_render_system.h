@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Camera.h"
 #include "Device.h"
 #include "Game_object.h"
 #include "Pipeline.h"
@@ -13,7 +14,7 @@ namespace lve {
         SimpleRenderSystem(const SimpleRenderSystem &) = delete;
         SimpleRenderSystem &operator=(const SimpleRenderSystem &) = delete;
 
-        void renderGameObjects(VkCommandBuffer commandBuffer, std::vector<LveGameObject> &gameObjects);
+        void renderGameObjects(VkCommandBuffer commandBuffer, std::vector<LveGameObject> &gameObjects, const LveCamera &camera);
 
     private:
         void createPipelineLayout();

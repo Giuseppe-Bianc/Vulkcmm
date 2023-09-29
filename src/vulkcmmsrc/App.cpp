@@ -1,4 +1,5 @@
 #include "App.h"
+#include "Camera.h"
 #include "Simple_render_system.h"
 
 namespace lve {
@@ -20,14 +21,18 @@ namespace lve {
 
     void FirstApp::run() {
         SimpleRenderSystem simpleRenderSystem{lveDevice, lveRenderer.getSwapChainRenderPass()};
+        LveCamera camera{};
         FPSCounter counter;
 
         while(!lveWindow.shouldClose()) {
             glfwPollEvents();
             updateFrameRate(counter);
+            const float aspect = lveRenderer.getAspectRatio();
+            // camera.setOrthographicProjection(-aspect, aspect, -1, 1, -1, 1);
+            camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 10.f);
             if(auto commandBuffer = lveRenderer.beginFrame()) {
                 lveRenderer.beginSwapChainRenderPass(commandBuffer);
-                simpleRenderSystem.renderGameObjects(commandBuffer, gameObjects);
+                simpleRenderSystem.renderGameObjects(commandBuffer, gameObjects, camera);
                 lveRenderer.endSwapChainRenderPass(commandBuffer);
                 lveRenderer.endFrame();
             }
@@ -99,7 +104,7 @@ namespace lve {
         std::shared_ptr<LveModel> lveModel = createCubeModel(lveDevice, {.0f, .0f, .0f});
         auto cube = LveGameObject::createGameObject();
         cube.model = lveModel;
-        cube.transform.translation = {.0f, .0f, val1};
+        cube.transform.translation = {.0f, .0f, 1.5f};
         cube.transform.scale = {val1, val1, val1};
         gameObjects.emplace_back(std::move(cube));
     }
