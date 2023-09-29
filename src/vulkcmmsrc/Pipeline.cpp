@@ -2,7 +2,7 @@
 #include "Model.h"
 
 namespace lve {
-
+    DISABLE_WARNINGS_PUSH(26432 26446)
     LvePipeline::LvePipeline(LveDevice &device, const std::string &vertFilepath, const std::string &fragFilepath,
                              const PipelineConfigInfo &configInfo)
       : lveDevice{device} {
@@ -172,5 +172,5 @@ namespace lve {
         configInfo.dynamicStateInfo.dynamicStateCount = NC_UI32T(configInfo.dynamicStateEnables.size());
         configInfo.dynamicStateInfo.flags = 0;
     }
-
+    DISABLE_WARNINGS_POP()
 }  // namespace lve

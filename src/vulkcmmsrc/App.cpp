@@ -2,33 +2,29 @@
 #include "Simple_render_system.h"
 
 namespace lve {
+    static inline constexpr float val1 = .5f;
+    static inline constexpr float val2 = .9f;
+    static inline constexpr float val3 = .8f;
+    static inline constexpr float val4 = .1f;
+    static inline constexpr std::string_view titleBase = "Vulkan Tutorial. ";
 
-    void FirstApp::calculateFrameRate() {
-        currentTime = glfwGetTime();
-        const double delta = currentTime - lastTime;
-
-        if(delta >= 1) {
-            const int framerate{std::max(1, int(numFrames / delta))};
-            std::stringstream title;
-            title << "Vulkan Tutorial. " << framerate << " fps." << frameTime << " pvft";
-            lveWindow.setTitle(title.str().c_str());
-            lastTime = currentTime;
-            numFrames = -1;
-            frameTime = C_LD(1000.0 / framerate);
-        }
-
-        ++numFrames;
+    void FirstApp::updateFrameRate(FPSCounter &counter) {
+        counter.update();
+        auto fps = counter.getFPS();
+        if(fps != 0) { lveWindow.setTitle(std::format("{} {} fps. ", titleBase, fps).c_str()); }
     }
 
+    DISABLE_WARNINGS_PUSH(26455)
     FirstApp::FirstApp() { loadGameObjects(); }
+    DISABLE_WARNINGS_POP()
 
     void FirstApp::run() {
         SimpleRenderSystem simpleRenderSystem{lveDevice, lveRenderer.getSwapChainRenderPass()};
+        FPSCounter counter;
 
         while(!lveWindow.shouldClose()) {
             glfwPollEvents();
-            calculateFrameRate();
-
+            updateFrameRate(counter);
             if(auto commandBuffer = lveRenderer.beginFrame()) {
                 lveRenderer.beginSwapChainRenderPass(commandBuffer);
                 simpleRenderSystem.renderGameObjects(commandBuffer, gameObjects);
@@ -41,57 +37,60 @@ namespace lve {
     }
 
     std::unique_ptr<LveModel> createCubeModel(LveDevice &device, glm::vec3 offset) {
+        DISABLE_WARNINGS_PUSH(26496)
+        Timer t;
+        DISABLE_WARNINGS_POP()
         std::vector<LveModel::Vertex> vertices{
-
             // left face (white)
-            {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
-            {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
-            {{-.5f, -.5f, .5f}, {.9f, .9f, .9f}},
-            {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
-            {{-.5f, .5f, -.5f}, {.9f, .9f, .9f}},
-            {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
+            {{-val1, -val1, -val1}, {val2, val2, val2}},
+            {{-val1, val1, val1}, {val2, val2, val2}},
+            {{-val1, -val1, val1}, {val2, val2, val2}},
+            {{-val1, -val1, -val1}, {val2, val2, val2}},
+            {{-val1, val1, -val1}, {val2, val2, val2}},
+            {{-val1, val1, val1}, {val2, val2, val2}},
 
             // right face (yellow)
-            {{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
-            {{.5f, .5f, .5f}, {.8f, .8f, .1f}},
-            {{.5f, -.5f, .5f}, {.8f, .8f, .1f}},
-            {{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
-            {{.5f, .5f, -.5f}, {.8f, .8f, .1f}},
-            {{.5f, .5f, .5f}, {.8f, .8f, .1f}},
+            {{val1, -val1, -val1}, {val3, val3, val4}},
+            {{val1, val1, val1}, {val3, val3, val4}},
+            {{val1, -val1, val1}, {val3, val3, val4}},
+            {{val1, -val1, -val1}, {val3, val3, val4}},
+            {{val1, val1, -val1}, {val3, val3, val4}},
+            {{val1, val1, val1}, {val3, val3, val4}},
 
             // top face (orange, remember y axis points down)
-            {{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
-            {{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
-            {{-.5f, -.5f, .5f}, {.9f, .6f, .1f}},
-            {{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
-            {{.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
-            {{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+            {{-val1, -val1, -val1}, {val2, .6f, val4}},
+            {{val1, -val1, val1}, {val2, .6f, val4}},
+            {{-val1, -val1, val1}, {val2, .6f, val4}},
+            {{-val1, -val1, -val1}, {val2, .6f, val4}},
+            {{val1, -val1, -val1}, {val2, .6f, val4}},
+            {{val1, -val1, val1}, {val2, .6f, val4}},
 
             // bottom face (red)
-            {{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
-            {{.5f, .5f, .5f}, {.8f, .1f, .1f}},
-            {{-.5f, .5f, .5f}, {.8f, .1f, .1f}},
-            {{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
-            {{.5f, .5f, -.5f}, {.8f, .1f, .1f}},
-            {{.5f, .5f, .5f}, {.8f, .1f, .1f}},
+            {{-val1, val1, -val1}, {val3, val4, val4}},
+            {{val1, val1, val1}, {val3, val4, val4}},
+            {{-val1, val1, val1}, {val3, val4, val4}},
+            {{-val1, val1, -val1}, {val3, val4, val4}},
+            {{val1, val1, -val1}, {val3, val4, val4}},
+            {{val1, val1, val1}, {val3, val4, val4}},
 
             // nose face (blue)
-            {{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
-            {{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
-            {{-.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
-            {{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
-            {{.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
-            {{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+            {{-val1, -val1, val1}, {val4, val4, val3}},
+            {{val1, val1, val1}, {val4, val4, val3}},
+            {{-val1, val1, val1}, {val4, val4, val3}},
+            {{-val1, -val1, val1}, {val4, val4, val3}},
+            {{val1, -val1, val1}, {val4, val4, val3}},
+            {{val1, val1, val1}, {val4, val4, val3}},
 
             // tail face (green)
-            {{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
-            {{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
-            {{-.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
-            {{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
-            {{.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
-            {{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+            {{-val1, -val1, -val1}, {val4, val3, val4}},
+            {{val1, val1, -val1}, {val4, val3, val4}},
+            {{-val1, val1, -val1}, {val4, val3, val4}},
+            {{-val1, -val1, -val1}, {val4, val3, val4}},
+            {{val1, -val1, -val1}, {val4, val3, val4}},
+            {{val1, val1, -val1}, {val4, val3, val4}},
 
         };
+        t.elapsedMcsToString("vertices setupp");
         for(auto &v : vertices) { v.position += offset; }
         return std::make_unique<LveModel>(device, vertices);
     }
@@ -100,8 +99,8 @@ namespace lve {
         std::shared_ptr<LveModel> lveModel = createCubeModel(lveDevice, {.0f, .0f, .0f});
         auto cube = LveGameObject::createGameObject();
         cube.model = lveModel;
-        cube.transform.translation = {.0f, .0f, .5f};
-        cube.transform.scale = {.5f, .5f, .5f};
+        cube.transform.translation = {.0f, .0f, val1};
+        cube.transform.scale = {val1, val1, val1};
         gameObjects.emplace_back(std::move(cube));
     }
 

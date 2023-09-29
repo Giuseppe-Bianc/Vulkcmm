@@ -16,11 +16,11 @@ namespace lve {
         LveSwapChain(const LveSwapChain &) = delete;
         LveSwapChain &operator=(const LveSwapChain &) = delete;
 #pragma optimize("gt", on)
-        [[nodiscard]] inline VkFramebuffer getFrameBuffer(int index) noexcept { return swapChainFramebuffers[index]; }
+        [[nodiscard]] inline VkFramebuffer getFrameBuffer(int index) noexcept { return swapChainFramebuffers.at(index); }
 #pragma optimize("gt", on)
         [[nodiscard]] inline VkRenderPass getRenderPass() noexcept { return renderPass; }
 #pragma optimize("gt", on)
-        [[nodiscard]] inline VkImageView getImageView(int index) noexcept { return swapChainImageViews[index]; }
+        [[nodiscard]] inline VkImageView getImageView(int index) noexcept { return swapChainImageViews.at(index); }
 #pragma optimize("gt", on)
         [[nodiscard]] inline size_t imageCount() const noexcept { return swapChainImages.size(); }
 #pragma optimize("gt", on)

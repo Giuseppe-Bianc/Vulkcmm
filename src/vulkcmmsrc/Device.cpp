@@ -1,6 +1,7 @@
 #include "Device.h"
 
 namespace lve {
+    DISABLE_WARNINGS_PUSH(26485 26481 26446 26482)
 
 #pragma optimize("gt", on)
     [[nodiscard]] inline static std::string_view debugCallbackString(
@@ -491,5 +492,6 @@ namespace lve {
         VK_CHECK(vkAllocateMemory(device_, &allocInfo, nullptr, &imageMemory), VKRAppError("failed to allocate image memory!"));
         VK_CHECK(vkBindImageMemory(device_, image, imageMemory, 0), VKRAppError("failed to bind image memory!"));
     }
+    DISABLE_WARNINGS_POP()
 
 }  // namespace lve

@@ -6,13 +6,14 @@ static constexpr long double TIME_DIVISOR = MICROSENCONDSFACTOR;
 static constexpr long double TIME_DIVISOR = MILLISENCONDSFACTOR;
 #endif  // _DEBUG
 namespace lve {
-
+    DISABLE_WARNINGS_PUSH(26432)
     LveWindow::LveWindow(int ww, int hh, const std::string &name) : width{ww}, height{hh}, windowName{name} { initWindow(); }
 
     LveWindow::~LveWindow() noexcept {
         glfwDestroyWindow(window);
         glfwTerminate();
     }
+    DISABLE_WARNINGS_POP()
 
     void LveWindow::initWindow() {
         Timer t;

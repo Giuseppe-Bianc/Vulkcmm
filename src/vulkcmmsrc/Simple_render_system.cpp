@@ -2,12 +2,11 @@
 
 namespace lve {
 
-    DISABLE_WARNINGS_PUSH(4324)
+    DISABLE_WARNINGS_PUSH(4324 26432)
     struct SimplePushConstantData {
         glm::mat4 transform{1.f};
         alignas(16) glm::vec3 color;
     };
-    DISABLE_WARNINGS_POP()
 
     SimpleRenderSystem::SimpleRenderSystem(LveDevice &device, VkRenderPass renderPass) : lveDevice{device} {
         createPipelineLayout();
@@ -15,6 +14,7 @@ namespace lve {
     }
 
     SimpleRenderSystem::~SimpleRenderSystem() { vkDestroyPipelineLayout(lveDevice.device(), pipelineLayout, nullptr); }
+    DISABLE_WARNINGS_POP()
 
     void SimpleRenderSystem::createPipelineLayout() {
         VkPushConstantRange pushConstantRange{};

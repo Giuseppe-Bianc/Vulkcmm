@@ -22,7 +22,8 @@
 #define DISABLE_WARNINGS_POP()
 #endif
 
-DISABLE_WARNINGS_PUSH(6386 6385 4005 26481 4459)
+DISABLE_WARNINGS_PUSH(
+    6386 6385 4005 26481 4459 26440 26455 6285 26496 26472 26497 26457 26818 26446 26482 26493 26429 26490 26485 26475 26451 26814 26494 26446 26459 26498 26446 26432 26496 26446 26460 26473 26491 6244 26474)
 // clang-format off
 #include <cassert>
 #include <algorithm>
@@ -142,7 +143,7 @@ template <typename OStream, typename T, glm::qualifier Q> inline OStream &operat
 
 #define VK_CHECK_SWAPCHAIN(f, trowable)                                                                                          \
     do {                                                                                                                         \
-        VkResult res = (f);                                                                                                      \
+        const VkResult res = (f);                                                                                                \
         if(res != VK_SUCCESS && res != VK_SUBOPTIMAL_KHR) [[unlikely]] {                                                         \
             constexpr auto loc = std::source_location::current();                                                                \
             LCRITICAL("Fatal : VkResult is \"{0}\" from{1} in {2} at line {3}", #f, string_VkResult(res), loc.file_name(),       \

@@ -1,7 +1,7 @@
 #include "Renderer.h"
 
 namespace lve {
-
+    DISABLE_WARNINGS_PUSH(26432 26446)
     LveRenderer::LveRenderer(LveWindow &window, LveDevice &device) : lveWindow{window}, lveDevice{device} {
         recreateSwapChain();
         createCommandBuffers();
@@ -85,7 +85,7 @@ namespace lve {
         currentFrameIndex = (currentFrameIndex + 1) % LveSwapChain::MAX_FRAMES_IN_FLIGHT;
     }
 
-    void LveRenderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer) {
+    void LveRenderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer) noexcept {
         assert(isFrameStarted && "Can't call beginSwapChainRenderPass if frame is not in progress");
         assert(commandBuffer == getCurrentCommandBuffer() && "Can't begin render pass on command buffer from a different frame");
 
@@ -122,5 +122,5 @@ namespace lve {
         assert(commandBuffer == getCurrentCommandBuffer() && "Can't end render pass on command buffer from a different frame");
         vkCmdEndRenderPass(commandBuffer);
     }
-
+    DISABLE_WARNINGS_POP()
 }  // namespace lve

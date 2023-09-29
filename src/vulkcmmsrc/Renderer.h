@@ -27,7 +27,7 @@ namespace lve {
 
         VkCommandBuffer beginFrame();
         void endFrame();
-        void beginSwapChainRenderPass(VkCommandBuffer commandBuffer);
+        void beginSwapChainRenderPass(VkCommandBuffer commandBuffer) noexcept;
         void endSwapChainRenderPass(VkCommandBuffer commandBuffer) noexcept;
 
     private:

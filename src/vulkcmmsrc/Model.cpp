@@ -1,6 +1,7 @@
 #include "Model.h"
 
 namespace lve {
+    DISABLE_WARNINGS_PUSH(26432 26446)
 #pragma optimize("gt", on)
     LveModel::LveModel(LveDevice &device, const std::vector<Vertex> &vertices) : lveDevice{device} {
         createVertexBuffers(vertices);
@@ -55,5 +56,5 @@ namespace lve {
         attributeDescriptions[1].offset = offsetof(Vertex, color);
         return attributeDescriptions;
     }
-
+    DISABLE_WARNINGS_POP()
 }  // namespace lve
