@@ -28,7 +28,7 @@ namespace lve {
     class LveWindow {
     public:
         LveWindow() noexcept = default;
-        LveWindow(int w, int h, const std::string &name);
+        LveWindow(int ww, int hh, const std::string &name);
         ~LveWindow() noexcept;
 
         LveWindow(const LveWindow &) = delete;
@@ -43,6 +43,7 @@ namespace lve {
 
         void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
         void setTitle(const char *title) noexcept { glfwSetWindowTitle(window, title); }
+
     private:
         static void framebufferResizeCallback(GLFWwindow *window, int width, int height) noexcept;
         void initWindow();

@@ -3,7 +3,6 @@
 #include "Device.h"
 #include "FPSCounter.h"
 #include "Game_object.h"
-#include "Pipeline.h"
 #include "Renderer.h"
 #include "Window.h"
 
