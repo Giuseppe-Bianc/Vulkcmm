@@ -39,6 +39,8 @@ namespace lve {
         [[nodiscard]] inline VkExtent2D getExtent() const noexcept { return {C_UI32T(width), C_UI32T(height)}; }
 #pragma optimize("gt", on)
         [[nodiscard]] inline bool wasWindowResized() const noexcept { return framebufferResized; }
+#pragma optimize("gt", on)
+        [[nodiscard]] inline GLFWwindow *getGLFWwindow() const noexcept { return window; }
         void resetWindowResizedFlag() noexcept { framebufferResized = false; }
 
         void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);

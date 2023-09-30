@@ -1,5 +1,6 @@
 #include "App.h"
 #include "Camera.h"
+#include "Keyboard_movement_controller.h"
 #include "Simple_render_system.h"
 
 namespace lve {
@@ -7,12 +8,19 @@ namespace lve {
     static inline constexpr float val2 = .9f;
     static inline constexpr float val3 = .8f;
     static inline constexpr float val4 = .1f;
-    static inline constexpr std::string_view titleBase = "Vulkan Tutorial. ";
 
-    void FirstApp::updateFrameRate(FPSCounter &counter) {
-        counter.update();
-        auto fps = counter.getFPS();
-        if(fps != 0) { lveWindow.setTitle(std::format("{} {} fps. ", titleBase, fps).c_str()); }
+    void FirstApp::updateFrameRate(const long double &frametime) {
+        frameCount++;
+        totalTime += frametime;
+
+        if(totalTime >= 1.0L) {
+            long double fps = (frameCount / totalTime);
+            lveWindow.setTitle(std::format("{} FPS: {} frametime {}", titleBase, fps, (frametime * 1000)).c_str());
+
+            // Reset counters
+            frameCount = 0;
+            totalTime = 0.0;
+        }
     }
 
     DISABLE_WARNINGS_PUSH(26455)
@@ -22,13 +30,21 @@ namespace lve {
     void FirstApp::run() {
         SimpleRenderSystem simpleRenderSystem{lveDevice, lveRenderer.getSwapChainRenderPass()};
         LveCamera camera{};
-        FPSCounter counter;
-        // camera.setViewDirection(glm::vec3(0.f), glm::vec3(0.5f, 0.f, 1.f));
-        camera.setViewTarget(glm::vec3(-1.f, -2.f, -2.f), glm::vec3(0.f, 0.f, 2.5f));
+        auto viewerObject = LveGameObject::createGameObject();
+        const KeyboardMovementController cameraController{};
 
+        auto currentTime = std::chrono::high_resolution_clock::now();
         while(!lveWindow.shouldClose()) {
             glfwPollEvents();
-            updateFrameRate(counter);
+
+            const auto newTime = std::chrono::high_resolution_clock::now();
+            const auto frameTime = std::chrono::duration<long double, std::chrono::seconds::period>(newTime - currentTime)
+                                       .count();
+            currentTime = newTime;
+            updateFrameRate(frameTime);
+
+            cameraController.moveInPlaneXZ(lveWindow.getGLFWwindow(), frameTime, viewerObject);
+            camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
             const float aspect = lveRenderer.getAspectRatio();
             // camera.setOrthographicProjection(-aspect, aspect, -1, 1, -1, 1);
             camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 10.f);

@@ -7,6 +7,7 @@
 #include "Window.h"
 
 namespace lve {
+    static inline constexpr std::string_view titleBase = "Vulkan Tutorial. ";
     class FirstApp {
     public:
         static constexpr int WIDTH = 800;
@@ -25,12 +26,14 @@ namespace lve {
 
     private:
         void loadGameObjects();
-        void updateFrameRate(FPSCounter &counter);
+        void updateFrameRate(const long double &frametime);
 
-        LveWindow lveWindow{w, h, "Vulkan Tutorial"};
+        LveWindow lveWindow{w, h, titleBase.data()};
         LveDevice lveDevice{lveWindow};
         LveRenderer lveRenderer{lveWindow, lveDevice};
 
         std::vector<LveGameObject> gameObjects;
+        int frameCount{};
+        long double totalTime{};
     };
 }  // namespace lve
