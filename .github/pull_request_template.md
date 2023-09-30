@@ -1,3 +1,5 @@
+# Pull Request Template
+
 ## Description
 
 Please provide a brief description of the changes made in this pull request.
@@ -20,7 +22,7 @@ Please describe the tests that you ran to verify your changes. Provide instructi
 - [ ] Test A
 - [ ] Test B
 
-## Checklist:
+## Checklist
 
 - [ ] My code follows the style guidelines of this project
 - [ ] I have performed a self-review of my own code
