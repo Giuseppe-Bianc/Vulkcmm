@@ -32,3 +32,15 @@ $RECYCLE.BIN/
 .TemporaryItems
 ehthumbs.db
 Thumbs.db
+/src/external/tinyobjloader/deps
+/src/external/tinyobjloader/examples
+/src/external/tinyobjloader/experimental
+/src/external/tinyobjloader/fuzzer
+/src/external/tinyobjloader/images
+/src/external/tinyobjloader/jni
+/src/external/tinyobjloader/mapbox
+/src/external/tinyobjloader/models
+/src/external/tinyobjloader/python
+/src/external/tinyobjloader/tests
+/src/external/tinyobjloader/tools/windows
+/src/external/tinyobjloader/.github/ISSUE_TEMPLATE
