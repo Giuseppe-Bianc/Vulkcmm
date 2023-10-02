@@ -57,6 +57,9 @@
     <ClInclude Include="src\headers.h">
       <Filter>Headers</Filter>
     </ClInclude>
+    <ClInclude Include="src\utils.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\App.cpp">

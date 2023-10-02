@@ -1,6 +1,7 @@
 #pragma once
 // NOLINTBEGIN
 #define GLFW_PLATFORM_WIN32
+#define GLM_ENABLE_EXPERIMENTAL
 #define GLM_FORCE_SILENT_WARNINGS
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -24,12 +25,13 @@
 
 // clang-format off
 DISABLE_WARNINGS_PUSH(
-    4005 4459 6244 6285 6385 6386 26409 26415 
-    26418 26429 26432 26437 26438 26440 26446 
-    26447 26450 26451 26455 26457 26459 26460 
-    26461 26467 26472 26473 26474 26475 26481 
-    26482 26485 26490 26491 26493 26494 26495 
-    26496 26497 26498 26800 26814 26818 26826)
+    4005 4201 4459 6244 6285 6385 6386 26409 
+    26415 26418 26429 26432 26437 26438 26440 
+    26446 26447 26450 26451 26455 26457 26459 
+    26460 26461 26467 26472 26473 26474 26475 
+    26481 26482 26485 26490 26491 26493 26494 
+    26495 26496 26497 26498 26800 26814 26818 
+    26826)
 #include <cassert>
 #include <algorithm>
 #include <array>
@@ -55,6 +57,7 @@ DISABLE_WARNINGS_PUSH(
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/string_cast.hpp>
+#include <glm/gtx/hash.hpp>
 #include <iomanip>
 #include <iostream>
 #include <iterator>
@@ -129,9 +132,9 @@ template <typename OStream, typename T, glm::qualifier Q> inline OStream &operat
           VK_API_VERSION_MAJOR(version), VK_API_VERSION_MINOR(version), VK_API_VERSION_PATCH(version));
 
 #ifdef _DEBUG
-#define INFO_LOG_TIME(message, time) LINFO("{0} = {1} us", (message), (time))
+#define INFO_LOG_TIME(message, time) LINFO("{0} = {1:f} us", (message), (time))
 #else
-#define INFO_LOG_TIME(message, time) LINFO("{0} = {1} ns", (message), (time))
+#define INFO_LOG_TIME(message, time) LINFO("{0} = {1:f} ns", (message), (time))
 #endif  // _DEBUG
 
 #define VK_CHECK(f, trowable)                                                                                                    \

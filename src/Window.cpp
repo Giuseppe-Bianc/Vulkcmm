@@ -113,15 +113,15 @@ namespace lve {
         static const auto totalsetuptime = totalwindowsetuptime + (reposition / C_LD(1000.0));
         glfwShowWindow(window);
 
-        LINFO("setup time for glfw = {0} ms", glfwsetuptime);
+        LINFO("setup time for glfw = {:f} ms", glfwsetuptime);
         INFO_LOG_TIME("Time spent on GLFW Hints Setup", glfwhintstime);
-        LINFO("time for creating the window {0}: (w: {1}, h: {2}, pos:(x:{3}, y:{4})) = {5} ms", windowTitle.data(), w, h,
+        LINFO("time for creating the window {0}: (w: {1}, h: {2}, pos:(x:{3}, y:{4})) = {5:f} ms", windowTitle.data(), w, h,
               centerX, centerY, wcreationtime);
         INFO_LOG_TIME("Time taken to retrieve the primary monitor", primaryMonitortime);
-        LINFO("Time taken to retrieve the primary monitor mode = {0} us", modetime);
-        LINFO("Time taken for the setup of window repositioning = {0} us", repossetuptime);
-        LINFO("time for repositionig the window{0} = {1} us", windowTitle.data(), wrepostime);
-        LINFO("toltal setup time = {0} ms", totalsetuptime);
+        LINFO("Time taken to retrieve the primary monitor mode = {:f} us", modetime);
+        LINFO("Time taken for the setup of window repositioning = {:f} us", repossetuptime);
+        LINFO("time for repositionig the window{0} = {1:f} us", windowTitle.data(), wrepostime);
+        LINFO("toltal setup time = {:f} ms", totalsetuptime);
     }
 
     void LveWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR *surface) {

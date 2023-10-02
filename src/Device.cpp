@@ -279,10 +279,8 @@ namespace lve {
         vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
         std::vector<VkExtensionProperties> extensions(extensionCount);
         vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
-        t.stop();
-        t.elapsedMllisToString("hasGfl...vkEnumerateInstanceExtensionProperties");
 
-        Timer tt;
+    
         LINFO("available extensions:");
         std::unordered_set<std::string_view> available;
         for(const auto &extension : extensions) {
@@ -296,8 +294,8 @@ namespace lve {
             LINFO("\t{0}", required);
             if(!available.contains(required)) [[unlikely]] { throw VKRAppError("Missing required glfw extension"); }
         }
-        tt.stop();
-        tt.elapsedMllisToString("hasGflw... find extensions");
+        t.stop();
+        t.elapsedMllisToString("hasGflwRequiredInstanceExtensions");
     }
 
     bool LveDevice::checkDeviceExtensionSupport(VkPhysicalDevice device) const {

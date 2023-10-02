@@ -46,7 +46,6 @@ namespace lve {
             cameraController.moveInPlaneXZ(lveWindow.getGLFWwindow(), frameTime, viewerObject);
             camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
             const float aspect = lveRenderer.getAspectRatio();
-            // camera.setOrthographicProjection(-aspect, aspect, -1, 1, -1, 1);
             camera.setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 10.f);
             if(auto commandBuffer = lveRenderer.beginFrame()) {
                 lveRenderer.beginSwapChainRenderPass(commandBuffer);
@@ -59,72 +58,13 @@ namespace lve {
         vkDeviceWaitIdle(lveDevice.device());
     }
 
-    std::unique_ptr<LveModel> createCubeModel(LveDevice &device, glm::vec3 offset) {
-        DISABLE_WARNINGS_PUSH(26496)
-        Timer t;
-        DISABLE_WARNINGS_POP()
-        std::vector<LveModel::Vertex> vertices{
-            // left face (white)
-            {{-val1, -val1, -val1}, {val2, val2, val2}},
-            {{-val1, val1, val1}, {val2, val2, val2}},
-            {{-val1, -val1, val1}, {val2, val2, val2}},
-            {{-val1, -val1, -val1}, {val2, val2, val2}},
-            {{-val1, val1, -val1}, {val2, val2, val2}},
-            {{-val1, val1, val1}, {val2, val2, val2}},
-
-            // right face (yellow)
-            {{val1, -val1, -val1}, {val3, val3, val4}},
-            {{val1, val1, val1}, {val3, val3, val4}},
-            {{val1, -val1, val1}, {val3, val3, val4}},
-            {{val1, -val1, -val1}, {val3, val3, val4}},
-            {{val1, val1, -val1}, {val3, val3, val4}},
-            {{val1, val1, val1}, {val3, val3, val4}},
-
-            // top face (orange, remember y axis points down)
-            {{-val1, -val1, -val1}, {val2, .6f, val4}},
-            {{val1, -val1, val1}, {val2, .6f, val4}},
-            {{-val1, -val1, val1}, {val2, .6f, val4}},
-            {{-val1, -val1, -val1}, {val2, .6f, val4}},
-            {{val1, -val1, -val1}, {val2, .6f, val4}},
-            {{val1, -val1, val1}, {val2, .6f, val4}},
-
-            // bottom face (red)
-            {{-val1, val1, -val1}, {val3, val4, val4}},
-            {{val1, val1, val1}, {val3, val4, val4}},
-            {{-val1, val1, val1}, {val3, val4, val4}},
-            {{-val1, val1, -val1}, {val3, val4, val4}},
-            {{val1, val1, -val1}, {val3, val4, val4}},
-            {{val1, val1, val1}, {val3, val4, val4}},
-
-            // nose face (blue)
-            {{-val1, -val1, val1}, {val4, val4, val3}},
-            {{val1, val1, val1}, {val4, val4, val3}},
-            {{-val1, val1, val1}, {val4, val4, val3}},
-            {{-val1, -val1, val1}, {val4, val4, val3}},
-            {{val1, -val1, val1}, {val4, val4, val3}},
-            {{val1, val1, val1}, {val4, val4, val3}},
-
-            // tail face (green)
-            {{-val1, -val1, -val1}, {val4, val3, val4}},
-            {{val1, val1, -val1}, {val4, val3, val4}},
-            {{-val1, val1, -val1}, {val4, val3, val4}},
-            {{-val1, -val1, -val1}, {val4, val3, val4}},
-            {{val1, -val1, -val1}, {val4, val3, val4}},
-            {{val1, val1, -val1}, {val4, val3, val4}},
-
-        };
-        t.elapsedMcsToString("vertices setupp");
-        for(auto &v : vertices) { v.position += offset; }
-        return std::make_unique<LveModel>(device, vertices);
-    }
-
     void FirstApp::loadGameObjects() {
-        std::shared_ptr<LveModel> lveModel = createCubeModel(lveDevice, {.0f, .0f, .0f});
-        auto cube = LveGameObject::createGameObject();
-        cube.model = lveModel;
-        cube.transform.translation = {.0f, .0f, 2.5f};
-        cube.transform.scale = {val1, val1, val1};
-        gameObjects.emplace_back(std::move(cube));
+        std::shared_ptr<LveModel> lveModel = LveModel::createModelFromFile(lveDevice, "models/smooth_vase.obj");
+        auto gameObj = LveGameObject::createGameObject();
+        gameObj.model = lveModel;
+        gameObj.transform.translation = {.0f, .0f, 2.5f};
+        gameObj.transform.scale = glm::vec3(3.f);
+        gameObjects.emplace_back(std::move(gameObj));
     }
 
 }  // namespace lve
