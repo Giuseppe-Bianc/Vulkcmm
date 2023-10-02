@@ -44,3 +44,5 @@ Thumbs.db
 /src/external/tinyobjloader/tests
 /src/external/tinyobjloader/tools/windows
 /src/external/tinyobjloader/.github/ISSUE_TEMPLATE
+/bin
+/bin-int
