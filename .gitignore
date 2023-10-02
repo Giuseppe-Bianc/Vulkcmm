@@ -46,3 +46,14 @@ Thumbs.db
 /src/external/tinyobjloader/.github/ISSUE_TEMPLATE
 /bin
 /bin-int
+/external/spdlog/bench
+/external/spdlog/logos
+/external/spdlog/scripts
+/external/spdlog/tests
+/external/spdlog/.clang-format
+/external/spdlog/.clang-tidy
+/external/spdlog/.gitattributes
+/external/spdlog/.gitignore
+/external/spdlog/appveyor.yml
+/external/spdlog/CMakeLists.txt
+/external/spdlog/INSTALL
