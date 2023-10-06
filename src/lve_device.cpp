@@ -9,6 +9,21 @@
 namespace lve {
 
     DISABLE_WARNINGS_PUSH(26485 26481 26446 26482)
+    void SwapChainSupportDetails::printDetails(const SwapChainSupportDetails &swapCainsDetails) {
+        LINFO("Swapchain support details:");
+        LINFO("Image Count: {}-{}", swapCainsDetails.capabilities.minImageCount, swapCainsDetails.capabilities.maxImageCount);
+        LINFO("Supported Extent: {}x{}", swapCainsDetails.capabilities.currentExtent.width,
+              swapCainsDetails.capabilities.currentExtent.height);
+        LINFO("Supported Extent: {}x{} - {}x{}", swapCainsDetails.capabilities.minImageExtent.width,
+              swapCainsDetails.capabilities.minImageExtent.height, swapCainsDetails.capabilities.maxImageExtent.width,
+              swapCainsDetails.capabilities.maxImageExtent.height);
+        LINFO("Image Array Layers: {}", swapCainsDetails.capabilities.maxImageArrayLayers);
+        LINFO("Supported Transforms: {}", string_VkSurfaceTransformFlagsKHR(swapCainsDetails.capabilities.supportedTransforms));
+        LINFO("Current Transform: {}", string_VkSurfaceTransformFlagBitsKHR(swapCainsDetails.capabilities.currentTransform));
+        LINFO("Supported Composite Alpha: {}",
+              string_VkCompositeAlphaFlagsKHR(swapCainsDetails.capabilities.supportedCompositeAlpha));
+        LINFO("Supported Usage Flags: {}", string_VkImageUsageFlags(swapCainsDetails.capabilities.supportedUsageFlags));
+    }
 
 #pragma optimize("gt", on)
     [[nodiscard]] inline static std::string_view debugCallbackString(
@@ -134,7 +149,6 @@ namespace lve {
         uint32_t deviceCount = 0;
         vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
         if(deviceCount == 0) { throw VKRAppError("failed to find GPUs with Vulkan support!"); }
-        LINFO("Device count: {}", deviceCount);
         std::vector<VkPhysicalDevice> devices(deviceCount);
         vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
 
@@ -148,7 +162,12 @@ namespace lve {
         if(physicalDevice == VK_NULL_HANDLE) { throw VKRAppError("failed to find a suitable GPU!"); }
 
         vkGetPhysicalDeviceProperties(physicalDevice, &properties);
-        LINFO("physical device: {0}", properties.deviceName);
+        LINFO("Device count: {}", deviceCount);
+        LINFO("API Version: {}", properties.apiVersion);
+        LINFO("Driver Version: {}", properties.driverVersion);
+        LINFO("Vendor ID: {}", properties.vendorID);
+        LINFO("Physical Device ID: {}", properties.deviceID);
+        LINFO("Physical Device Name: physical device{0}", properties.deviceName);
     }
 
     void LveDevice::createLogicalDevice() {
@@ -216,6 +235,7 @@ namespace lve {
         bool swapChainAdequate = false;
         if(extensionsSupported) {
             SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
+            SwapChainSupportDetails::printDetails(swapChainSupport);
             swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
         }
 
@@ -500,4 +520,5 @@ namespace lve {
         VK_CHECK(vkBindImageMemory(device_, image, imageMemory, 0), VKRAppError("failed to bind image memory!"));
     }
     DISABLE_WARNINGS_POP()
+
 }  // namespace lve

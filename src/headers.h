@@ -205,4 +205,8 @@ static inline constexpr double invStWMinusOne = 1.0 / C_D(ST_w - 1);
 static inline constexpr unsigned long long doublesize = sizeof(double);
 static inline constexpr std::string_view windowTitle = "Vulkan window";
 
+#pragma optimize("gt", on)
+static constexpr void printVector(const std::vector<std::string> &vec) {
+    for(const std::string &element : vec) { LINFO("\t\t{}", element); }
+}
 // NOLINTEND
