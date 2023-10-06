@@ -17,17 +17,15 @@ namespace lve {
     }
 
     std::vector<char> LvePipeline::readFile(const std::string &filepath) {
+        if(!std::filesystem::exists(filepath)) { throw VKRAppError("File not found: " + filepath); }
         std::ifstream file{filepath, std::ios::ate | std::ios::binary};
+        if(!file.is_open()) { throw VKRAppError("Failed to open file: " + filepath); }
+        const auto fileSize = static_cast<size_t>(file.tellg());
 
-        if(!file.is_open()) { throw VKRAppError("failed to open file: " + filepath); }
-
-        const auto fileSize = NC_ST(file.tellg());
         std::vector<char> buffer(fileSize);
 
         file.seekg(0);
         file.read(buffer.data(), fileSize);
-
-        file.close();
         return buffer;
     }
 
@@ -89,7 +87,7 @@ namespace lve {
         pipelineInfo.basePipelineIndex = -1;
         pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
         VK_CHECK(vkCreateGraphicsPipelines(lveDevice.device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline),
-                     VKRAppError("failed to create graphics pipeline"));
+                 VKRAppError("failed to create graphics pipeline"));
     }
 
     void LvePipeline::createShaderModule(const std::vector<char> &code, VkShaderModule *shaderModule) {
