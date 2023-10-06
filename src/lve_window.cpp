@@ -1,4 +1,4 @@
-#include "Window.h"
+#include "lve_window.hpp"
 
 #ifdef _DEBUG
 static constexpr long double TIME_DIVISOR = MICROSENCONDSFACTOR;
@@ -24,7 +24,7 @@ namespace lve {
         if(!glfwVulkanSupported()) {
             glfwTerminate();
             LCRITICAL("Failed to initialize GLFW. vulkan not supported");
-            throw VKRAppError("Failed to initialize GLFW. vulkan not supported");
+            throw VKRAppError("Failed to initialize GLFW. Vulkan not supported");
         }
         glfwSetErrorCallback(errorCallback);
         t.stop();

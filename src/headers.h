@@ -14,15 +14,7 @@
 #define GLM_FORCE_PRECISION_HIGHP_DOUBLE
 #define GLM_FORCE_PRECISION_HIGHP_INT
 #define GLM_FORCE_PRECISION_HIGHP_FLOAT
-#ifdef _MSC_VER
-// Microsoft Visual C++ Compiler
-#define DISABLE_WARNINGS_PUSH(...) __pragma(warning(push)) __pragma(warning(disable : __VA_ARGS__))
-#define DISABLE_WARNINGS_POP() __pragma(warning(pop))
-#else
-#define DISABLE_WARNINGS_PUSH(...)
-#define DISABLE_WARNINGS_POP()
-#endif
-
+#include "disableWarn.h"
 // clang-format off
 DISABLE_WARNINGS_PUSH(
     4005 4201 4459 6244 6285 6385 6386 26409 

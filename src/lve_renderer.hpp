@@ -1,7 +1,8 @@
 #pragma once
-#include "Device.h"
-#include "Swap_chain.h"
-#include "Window.h"
+
+#include "lve_device.hpp"
+#include "lve_swap_chain.hpp"
+#include "lve_window.hpp"
 
 namespace lve {
     class LveRenderer {
@@ -29,7 +30,7 @@ namespace lve {
         VkCommandBuffer beginFrame();
         void endFrame();
         void beginSwapChainRenderPass(VkCommandBuffer commandBuffer) noexcept;
-        void endSwapChainRenderPass(VkCommandBuffer commandBuffer) noexcept;
+        void endSwapChainRenderPass(VkCommandBuffer commandBuffer) const noexcept;
 
     private:
         void createCommandBuffers();

@@ -1,4 +1,4 @@
-#include "Swap_chain.h"
+#include "lve_swap_chain.hpp"
 
 namespace lve {
     DISABLE_WARNINGS_PUSH(26432 26446)
@@ -35,7 +35,7 @@ namespace lve {
             vkFreeMemory(device.device(), depthImageMemorys[i], nullptr);
         }
 
-        for(const auto framebuffer : swapChainFramebuffers) { vkDestroyFramebuffer(device.device(), framebuffer, nullptr); }
+        for(auto framebuffer : swapChainFramebuffers) { vkDestroyFramebuffer(device.device(), framebuffer, nullptr); }
 
         vkDestroyRenderPass(device.device(), renderPass, nullptr);
 
@@ -104,7 +104,7 @@ namespace lve {
     }
 
     void LveSwapChain::createSwapChain() {
-        const SwapChainSupportDetails swapChainSupport = device.getSwapChainSupport();
+        SwapChainSupportDetails swapChainSupport = device.getSwapChainSupport();
 
         const VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
         const VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
@@ -126,8 +126,8 @@ namespace lve {
         createInfo.imageArrayLayers = 1;
         createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-        const QueueFamilyIndices indices = device.findPhysicalQueueFamilies();
-        std::vector<uint32_t> queueFamilyIndices = {indices.graphicsFamily, indices.presentFamily};
+        QueueFamilyIndices indices = device.findPhysicalQueueFamilies();
+        std::array<uint32_t, 2> queueFamilyIndices = {indices.graphicsFamily, indices.presentFamily};
 
         if(indices.graphicsFamily != indices.presentFamily) {
             createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
@@ -165,10 +165,11 @@ namespace lve {
     void LveSwapChain::createImageViews() {
         swapChainImageViews.resize(swapChainImages.size());
         for(size_t i = 0; i < swapChainImages.size(); i++) {
-            VkImageViewCreateInfo viewInfo{.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-                                           .image = swapChainImages[i],
-                                           .viewType = VK_IMAGE_VIEW_TYPE_2D,
-                                           .format = swapChainImageFormat};
+            VkImageViewCreateInfo viewInfo{};
+            viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+            viewInfo.image = swapChainImages[i];
+            viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+            viewInfo.format = swapChainImageFormat;
             viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
             viewInfo.subresourceRange.baseMipLevel = 0;
             viewInfo.subresourceRange.levelCount = 1;
@@ -216,7 +217,6 @@ namespace lve {
         subpass.pDepthStencilAttachment = &depthAttachmentRef;
 
         VkSubpassDependency dependency = {};
-
         dependency.dstSubpass = 0;
         dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
         dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;

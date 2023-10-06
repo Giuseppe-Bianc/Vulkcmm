@@ -34,6 +34,7 @@ project "vulkancmake"
 
    files { 
       "src/**.h", 
+      "src/**.hpp", 
       "src/**.cpp", 
       "src/**.c",
       "src/**.frag",

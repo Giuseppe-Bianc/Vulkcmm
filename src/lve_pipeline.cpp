@@ -1,5 +1,6 @@
-#include "Pipeline.h"
-#include "Model.h"
+#include "lve_pipeline.hpp"
+
+#include "lve_model.hpp"
 
 namespace lve {
     DISABLE_WARNINGS_PUSH(26432 26446)
@@ -20,7 +21,7 @@ namespace lve {
 
         if(!file.is_open()) { throw VKRAppError("failed to open file: " + filepath); }
 
-        const auto fileSize = C_ST(file.tellg());
+        const auto fileSize = NC_ST(file.tellg());
         std::vector<char> buffer(fileSize);
 
         file.seekg(0);
@@ -42,7 +43,8 @@ namespace lve {
 
         createShaderModule(vertCode, &vertShaderModule);
         createShaderModule(fragCode, &fragShaderModule);
-        std::vector<VkPipelineShaderStageCreateInfo> shaderStages(2);
+
+        std::array<VkPipelineShaderStageCreateInfo, 2> shaderStages{};
         shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         shaderStages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
         shaderStages[0].module = vertShaderModule;
@@ -87,7 +89,7 @@ namespace lve {
         pipelineInfo.basePipelineIndex = -1;
         pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
         VK_CHECK(vkCreateGraphicsPipelines(lveDevice.device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline),
-                 VKRAppError("failed to create graphics pipeline"));
+                     VKRAppError("failed to create graphics pipeline"));
     }
 
     void LvePipeline::createShaderModule(const std::vector<char> &code, VkShaderModule *shaderModule) {

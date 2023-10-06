@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Device.h"
+#include "lve_device.hpp"
 
 namespace lve {
     class LveModel {
@@ -33,8 +33,9 @@ namespace lve {
         LveModel &operator=(const LveModel &) = delete;
 
         static std::unique_ptr<LveModel> createModelFromFile(LveDevice &device, const std::string &filepath);
-        void draw(VkCommandBuffer commandBuffer) const noexcept;
+
         void bind(VkCommandBuffer commandBuffer) noexcept;
+        void draw(VkCommandBuffer commandBuffer) const noexcept;
 
     private:
         void createVertexBuffers(const std::vector<Vertex> &vertices);
@@ -47,8 +48,8 @@ namespace lve {
         uint32_t vertexCount;
 
         bool hasIndexBuffer = false;
-        VkBuffer indexBuffer{};
-        VkDeviceMemory indexBufferMemory{};
-        uint32_t indexCount{};
+        VkBuffer indexBuffer;
+        VkDeviceMemory indexBufferMemory;
+        uint32_t indexCount;
     };
 }  // namespace lve

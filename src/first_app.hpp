@@ -1,9 +1,13 @@
 #pragma once
 
-#include "Device.h"
-#include "Game_object.h"
-#include "Renderer.h"
-#include "Window.h"
+#include "lve_device.hpp"
+#include "lve_game_object.hpp"
+#include "lve_renderer.hpp"
+#include "lve_window.hpp"
+
+// std
+#include <memory>
+#include <vector>
 
 namespace lve {
     static inline constexpr std::string_view titleBase = "Vulkan Tutorial. ";

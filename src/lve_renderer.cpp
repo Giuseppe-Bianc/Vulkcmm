@@ -1,4 +1,4 @@
-#include "Renderer.h"
+#include "lve_renderer.hpp"
 
 namespace lve {
     DISABLE_WARNINGS_PUSH(26432 26446)
@@ -58,6 +58,7 @@ namespace lve {
         }
 
         VK_CHECK_SWAPCHAIN(result, VKRAppError("failed to acquire swap chain image!"));
+
         isFrameStarted = true;
 
         auto commandBuffer = getCurrentCommandBuffer();
@@ -65,6 +66,7 @@ namespace lve {
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
         VK_CHECK(vkBeginCommandBuffer(commandBuffer, &beginInfo), VKRAppError("failed to begin recording command buffer!"));
+
         return commandBuffer;
     }
 
@@ -108,8 +110,8 @@ namespace lve {
         VkViewport viewport{};
         viewport.x = 0.0f;
         viewport.y = 0.0f;
-        viewport.width = C_F(lveSwapChain->getSwapChainExtent().width);
-        viewport.height = C_F(lveSwapChain->getSwapChainExtent().height);
+        viewport.width = static_cast<float>(lveSwapChain->getSwapChainExtent().width);
+        viewport.height = static_cast<float>(lveSwapChain->getSwapChainExtent().height);
         viewport.minDepth = 0.0f;
         viewport.maxDepth = 1.0f;
         const VkRect2D scissor{{0, 0}, lveSwapChain->getSwapChainExtent()};
@@ -117,7 +119,7 @@ namespace lve {
         vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
     }
 
-    void LveRenderer::endSwapChainRenderPass(VkCommandBuffer commandBuffer) noexcept {
+    void LveRenderer::endSwapChainRenderPass(VkCommandBuffer commandBuffer) const noexcept {
         assert(isFrameStarted && "Can't call endSwapChainRenderPass if frame is not in progress");
         assert(commandBuffer == getCurrentCommandBuffer() && "Can't end render pass on command buffer from a different frame");
         vkCmdEndRenderPass(commandBuffer);

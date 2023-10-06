@@ -1,6 +1,13 @@
-#include "Device.h"
+#include "lve_device.hpp"
+
+// std headers
+#include <cstring>
+#include <iostream>
+#include <set>
+#include <unordered_set>
 
 namespace lve {
+
     DISABLE_WARNINGS_PUSH(26485 26481 26446 26482)
 
 #pragma optimize("gt", on)
@@ -66,7 +73,6 @@ namespace lve {
     }
 
     // class member functions
-#pragma optimize("gt", on)
     LveDevice::LveDevice(LveWindow &window) : window{window} {
         createInstance();
         setupDebugMessenger();
@@ -75,7 +81,7 @@ namespace lve {
         createLogicalDevice();
         createCommandPool();
     }
-#pragma optimize("gt", on)
+
     LveDevice::~LveDevice() {
         vkDestroyCommandPool(device_, commandPool, nullptr);
         vkDestroyDevice(device_, nullptr);
@@ -97,7 +103,7 @@ namespace lve {
         appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
         appInfo.pEngineName = "No Engine";
         appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-        appInfo.apiVersion = VK_API_VERSION_1_3;
+        appInfo.apiVersion = VK_API_VERSION_1_0;
 
         VkInstanceCreateInfo createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -119,7 +125,7 @@ namespace lve {
             createInfo.pNext = nullptr;
         }
 
-        if(vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) { throw VKRAppError("failed to create instance!"); }
+        VK_CHECK(vkCreateInstance(&createInfo, nullptr, &instance), VKRAppError("failed to create instance!"));
 
         hasGflwRequiredInstanceExtensions();
     }
@@ -202,14 +208,14 @@ namespace lve {
 
     void LveDevice::createSurface() { window.createWindowSurface(instance, &surface_); }
 
-    [[nodiscard]] bool LveDevice::isDeviceSuitable(VkPhysicalDevice device) {
+    bool LveDevice::isDeviceSuitable(VkPhysicalDevice device) {
         const QueueFamilyIndices indices = findQueueFamilies(device);
 
         const bool extensionsSupported = checkDeviceExtensionSupport(device);
 
         bool swapChainAdequate = false;
         if(extensionsSupported) {
-            const SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
+            SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
             swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
         }
 
@@ -239,7 +245,7 @@ namespace lve {
                  VKRAppError("failed to set up debug messenger!"));
     }
 
-    bool LveDevice::checkValidationLayerSupport() const {
+    bool LveDevice::checkValidationLayerSupport() {
         uint32_t layerCount;
         vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
@@ -262,25 +268,25 @@ namespace lve {
         return true;
     }
 
-    std::vector<const char *> LveDevice::getRequiredExtensions() const {
+    std::vector<const char *> LveDevice::getRequiredExtensions() {
         uint32_t glfwExtensionCount = 0;
-        const auto glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+        const char **glfwExtensions;
+        glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
         std::vector<const char *> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
-        if(enableValidationLayers) { extensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME); }
+        if(enableValidationLayers) { extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME); }
 
         return extensions;
     }
 
-    void LveDevice::hasGflwRequiredInstanceExtensions() const {
+    void LveDevice::hasGflwRequiredInstanceExtensions() {
         Timer t;
         uint32_t extensionCount = 0;
         vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
         std::vector<VkExtensionProperties> extensions(extensionCount);
         vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
 
-    
         LINFO("available extensions:");
         std::unordered_set<std::string_view> available;
         for(const auto &extension : extensions) {
@@ -298,7 +304,7 @@ namespace lve {
         t.elapsedMllisToString("hasGflwRequiredInstanceExtensions");
     }
 
-    bool LveDevice::checkDeviceExtensionSupport(VkPhysicalDevice device) const {
+    bool LveDevice::checkDeviceExtensionSupport(VkPhysicalDevice device) {
         uint32_t extensionCount;
         vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
 
@@ -321,7 +327,8 @@ namespace lve {
         std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
         vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
 
-        for(int i = 0; const auto &queueFamily : queueFamilies) {
+        int i = 0;
+        for(const auto &queueFamily : queueFamilies) {
             if(queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
                 indices.graphicsFamily = i;
                 indices.graphicsFamilyHasValue = true;
@@ -394,6 +401,7 @@ namespace lve {
         bufferInfo.size = size;
         bufferInfo.usage = usage;
         bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
         VK_CHECK(vkCreateBuffer(device_, &bufferInfo, nullptr, &buffer), VKRAppError("failed to create vertex buffer!"));
 
         VkMemoryRequirements memRequirements;
@@ -488,8 +496,8 @@ namespace lve {
         allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, prop);
 
         VK_CHECK(vkAllocateMemory(device_, &allocInfo, nullptr, &imageMemory), VKRAppError("failed to allocate image memory!"));
+
         VK_CHECK(vkBindImageMemory(device_, image, imageMemory, 0), VKRAppError("failed to bind image memory!"));
     }
     DISABLE_WARNINGS_POP()
-
 }  // namespace lve

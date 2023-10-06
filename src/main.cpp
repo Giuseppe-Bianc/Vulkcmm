@@ -5,7 +5,7 @@
 // This file will be generated automatically when cur_you run the CMake
 // configuration step. It creates a namespace called `Vulkcmm`. You can modify
 // the source template at `configured_files/config.hpp.in`.
-#include "App.h"
+#include "first_app.hpp"
 
 // NOLINTNEXTLINE(bugprone-exception-escape)
 int main([[maybe_unused]] int argc, [[maybe_unused]] const char **argv) {

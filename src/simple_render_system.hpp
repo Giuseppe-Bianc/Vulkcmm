@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Camera.h"
-#include "Device.h"
-#include "Game_object.h"
-#include "Pipeline.h"
+#include "lve_camera.hpp"
+#include "lve_device.hpp"
+#include "lve_game_object.hpp"
+#include "lve_pipeline.hpp"
 
 namespace lve {
     class SimpleRenderSystem {

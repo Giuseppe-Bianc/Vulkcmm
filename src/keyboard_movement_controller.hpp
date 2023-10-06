@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Game_object.h"
-#include "Window.h"
+#include "lve_game_object.hpp"
+#include "lve_window.hpp"
 
 namespace lve {
     class KeyboardMovementController {
@@ -22,7 +22,7 @@ namespace lve {
         void moveInPlaneXZ(GLFWwindow *window, long double dt, LveGameObject &gameObject) const;
 
         KeyMappings keys{};
-        double moveSpeed{3.0};
-        double lookSpeed{1.5};
+        double moveSpeed{3.f};
+        double lookSpeed{1.5f};
     };
 }  // namespace lve

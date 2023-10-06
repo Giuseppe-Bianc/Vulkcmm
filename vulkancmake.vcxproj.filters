@@ -12,84 +12,90 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\App.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Camera.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Device.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Game_object.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Keyboard_movement_controller.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Pipeline.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Renderer.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Simple_render_system.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Swap_chain.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
     <ClInclude Include="src\Timer.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="src\VKRAppError.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\Window.h">
+    <ClInclude Include="src\casts.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\casts.h">
+    <ClInclude Include="src\disableWarn.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\first_app.hpp">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="src\headers.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\utils.h">
+    <ClInclude Include="src\keyboard_movement_controller.hpp">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lve_camera.hpp">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lve_device.hpp">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lve_game_object.hpp">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lve_model.hpp">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lve_pipeline.hpp">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lve_renderer.hpp">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lve_swap_chain.hpp">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lve_utils.hpp">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lve_window.hpp">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\simple_render_system.hpp">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\App.cpp">
-      <Filter>Sources\src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Camera.cpp">
-      <Filter>Sources\src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Device.cpp">
-      <Filter>Sources\src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Keyboard_movement_controller.cpp">
-      <Filter>Sources\src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model.cpp">
-      <Filter>Sources\src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Pipeline.cpp">
-      <Filter>Sources\src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer.cpp">
-      <Filter>Sources\src</Filter>
-    </ClCompile>
     <ClCompile Include="src\Simple_render_system.cpp">
       <Filter>Sources\src</Filter>
     </ClCompile>
-    <ClCompile Include="src\Swap_chain.cpp">
+    <ClCompile Include="src\first_app.cpp">
       <Filter>Sources\src</Filter>
     </ClCompile>
-    <ClCompile Include="src\Window.cpp">
+    <ClCompile Include="src\keyboard_movement_controller.cpp">
+      <Filter>Sources\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lve_camera.cpp">
+      <Filter>Sources\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lve_device.cpp">
+      <Filter>Sources\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lve_game_object.cpp">
+      <Filter>Sources\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lve_model.cpp">
+      <Filter>Sources\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lve_pipeline.cpp">
+      <Filter>Sources\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lve_renderer.cpp">
+      <Filter>Sources\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lve_swap_chain.cpp">
+      <Filter>Sources\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lve_window.cpp">
       <Filter>Sources\src</Filter>
     </ClCompile>
     <ClCompile Include="src\main.cpp">

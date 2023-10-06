@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Device.h"
+#include "lve_device.hpp"
 
 namespace lve {
 
@@ -8,6 +8,7 @@ namespace lve {
         PipelineConfigInfo() = default;
         PipelineConfigInfo(const PipelineConfigInfo &) = delete;
         PipelineConfigInfo &operator=(const PipelineConfigInfo &) = delete;
+
         VkPipelineViewportStateCreateInfo viewportInfo{};
         VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo{};
         VkPipelineRasterizationStateCreateInfo rasterizationInfo{};
@@ -40,11 +41,12 @@ namespace lve {
 
         void createGraphicsPipeline(const std::string &vertFilepath, const std::string &fragFilepath,
                                     const PipelineConfigInfo &configInfo);
+
         void createShaderModule(const std::vector<char> &code, VkShaderModule *shaderModule);
 
         LveDevice &lveDevice;
-        VkPipeline graphicsPipeline;
-        VkShaderModule vertShaderModule;
-        VkShaderModule fragShaderModule;
+        VkPipeline graphicsPipeline{};
+        VkShaderModule vertShaderModule{};
+        VkShaderModule fragShaderModule{};
     };
 }  // namespace lve

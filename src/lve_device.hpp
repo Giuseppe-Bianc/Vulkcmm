@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Window.h"
+#include "lve_window.hpp"
 
 namespace lve {
 
@@ -35,20 +35,15 @@ namespace lve {
         LveDevice &operator=(const LveDevice &) = delete;
         LveDevice(LveDevice &&) = delete;
         LveDevice &operator=(LveDevice &&) = delete;
-#pragma optimize("gt", on)
+
         [[nodiscard]] inline VkCommandPool getCommandPool() noexcept { return commandPool; }
-#pragma optimize("gt", on)
         [[nodiscard]] inline VkDevice device() noexcept { return device_; }
-#pragma optimize("gt", on)
         [[nodiscard]] inline VkSurfaceKHR surface() noexcept { return surface_; }
-#pragma optimize("gt", on)
         [[nodiscard]] inline VkQueue graphicsQueue() noexcept { return graphicsQueue_; }
-#pragma optimize("gt", on)
         [[nodiscard]] inline VkQueue presentQueue() noexcept { return presentQueue_; }
-#pragma optimize("gt", on)
+
         [[nodiscard]] inline SwapChainSupportDetails getSwapChainSupport() { return querySwapChainSupport(physicalDevice); }
-        uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-#pragma optimize("gt", on)
+        uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags prop);
         [[nodiscard]] inline QueueFamilyIndices findPhysicalQueueFamilies() { return findQueueFamilies(physicalDevice); }
         VkFormat findSupportedFormat(const std::vector<VkFormat> &candidates, VkImageTiling tiling,
                                      VkFormatFeatureFlags features);
@@ -56,11 +51,10 @@ namespace lve {
         // Buffer Helper Functions
         void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags prop, VkBuffer &buffer,
                           VkDeviceMemory &bufferMemory);
-        VkCommandBuffer beginSingleTimeCommands() noexcept;
+        [[nodiscard]] VkCommandBuffer beginSingleTimeCommands() noexcept;
         void endSingleTimeCommands(VkCommandBuffer commandBuffer) noexcept;
         void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) noexcept;
         void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layerCount) noexcept;
-
         void createImageWithInfo(const VkImageCreateInfo &imageInfo, VkMemoryPropertyFlags prop, VkImage &image,
                                  VkDeviceMemory &imageMemory);
 
@@ -75,19 +69,18 @@ namespace lve {
         void createCommandPool();
 
         // helper functions
-        [[nodiscard]] bool isDeviceSuitable(VkPhysicalDevice device);
-        [[nodiscard]] std::vector<const char *> getRequiredExtensions() const;
-        [[nodiscard]] bool checkValidationLayerSupport() const;
-        [[nodiscard]] QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+        bool isDeviceSuitable(VkPhysicalDevice device);
+        std::vector<const char *> getRequiredExtensions();
+        bool checkValidationLayerSupport();
+        QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
         void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo) const noexcept;
-        void hasGflwRequiredInstanceExtensions() const;
-        [[nodiscard]] bool checkDeviceExtensionSupport(VkPhysicalDevice device) const;
-        [[nodiscard]] SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
+        void hasGflwRequiredInstanceExtensions();
+        bool checkDeviceExtensionSupport(VkPhysicalDevice device);
+        SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
 
         VkInstance instance{};
-        VkDebugUtilsMessengerEXT debugMessenger{};
+        VkDebugUtilsMessengerEXT debugMessenger;
         VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-        // NOLINT
         LveWindow &window;
         VkCommandPool commandPool{};
 
@@ -96,8 +89,8 @@ namespace lve {
         VkQueue graphicsQueue_{};
         VkQueue presentQueue_{};
 
-        inline static const std::vector<const char *> validationLayers = {"VK_LAYER_KHRONOS_validation"};
-        inline static const std::vector<const char *> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+        static inline const std::vector<const char *> validationLayers = {"VK_LAYER_KHRONOS_validation"};
+        static inline const std::vector<const char *> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
     };
 
 }  // namespace lve

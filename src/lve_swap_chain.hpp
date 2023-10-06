@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Device.h"
+#include "lve_device.hpp"
 
 namespace lve {
 
@@ -15,6 +15,7 @@ namespace lve {
 
         LveSwapChain(const LveSwapChain &) = delete;
         LveSwapChain &operator=(const LveSwapChain &) = delete;
+
 #pragma optimize("gt", on)
         [[nodiscard]] inline VkFramebuffer getFrameBuffer(int index) noexcept { return swapChainFramebuffers.at(index); }
 #pragma optimize("gt", on)
@@ -56,10 +57,9 @@ namespace lve {
         void createSyncObjects();
 
         // Helper functions
-        [[nodiscard]] VkSurfaceFormatKHR chooseSwapSurfaceFormat(
-            const std::vector<VkSurfaceFormatKHR> &availableFormats) const noexcept;
-        [[nodiscard]] VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes) const;
-        [[nodiscard]] VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) const noexcept;
+        VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats) const noexcept;
+        VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes) const;
+        VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) const noexcept;
 
         VkFormat swapChainImageFormat;
         VkFormat swapChainDepthFormat;
