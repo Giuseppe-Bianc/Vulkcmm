@@ -49,7 +49,6 @@ namespace lve {
 
     VkResult LveSwapChain::acquireNextImage(uint32_t *imageIndex) noexcept {
         vkWaitForFences(device.device(), 1, &inFlightFences[currentFrame], VK_TRUE, std::numeric_limits<uint64_t>::max());
-
         const VkResult result = vkAcquireNextImageKHR(device.device(), swapChain, std::numeric_limits<uint64_t>::max(),
                                                       imageAvailableSemaphores[currentFrame],  // must be a not signaled semaphore
                                                       VK_NULL_HANDLE, imageIndex);
@@ -356,14 +355,15 @@ namespace lve {
     }
 
     VkExtent2D LveSwapChain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) const noexcept {
-        if(capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
+        if(capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) [[likely]] {
             return capabilities.currentExtent;
-        } else {
+        } else [[unlikely]] {
             VkExtent2D actualExtent = windowExtent;
-            actualExtent.width = std::max(capabilities.minImageExtent.width,
-                                          std::min(capabilities.maxImageExtent.width, actualExtent.width));
-            actualExtent.height = std::max(capabilities.minImageExtent.height,
-                                           std::min(capabilities.maxImageExtent.height, actualExtent.height));
+
+            actualExtent.width = std::clamp(actualExtent.width, capabilities.minImageExtent.width,
+                                            capabilities.maxImageExtent.width);
+            actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height,
+                                             capabilities.maxImageExtent.height);
 
             return actualExtent;
         }
