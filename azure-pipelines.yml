@@ -4,16 +4,33 @@
 # https://aka.ms/yaml
 
 trigger:
-- main
+  - main  # Or specify the branch you want to trigger the pipeline on
 
 pool:
-  vmImage: windows-latest
-steps:
+  vmImage: 'windows-latest'  # Use an image that matches your build environment
 
-- task: VSBuild@1
-  inputs:
-    solution: '**\*.sln'
-    platform: 'x64'
-    configuration: 'debug'
-    maximumCpuCount: true
-    msbuildArchitecture: 'x64'
+steps:
+  - script: |
+      # Install Vulkan SDK (Example for Chocolatey)
+      choco install vulkan-sdk -y
+    displayName: 'Install Vulkan SDK'
+    continueOnError: true  # Continue if the SDK is already installed
+
+  - script: |
+      git clone https://github.com/premake/premake-core.git
+      cd premake-core
+      build/premake5.exe --file=build\premake5.lua vs2022 --verbose
+    displayName: 'Build Premake5'
+    workingDirectory: $(Build.SourcesDirectory)
+
+  - script: |
+      premake5.exe vs2022 --verbose
+    displayName: 'Generate Visual Studio Solution'
+    workingDirectory: $(Build.SourcesDirectory)
+
+  - task: VSBuild@1
+    inputs:
+      solution: 'path\to\your\vulkan\project\YourProject.sln'
+      platform: 'x64'
+      configuration: 'Release'
+    displayName: 'Build Vulkan Project'
