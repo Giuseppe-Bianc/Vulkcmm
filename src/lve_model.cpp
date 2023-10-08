@@ -53,7 +53,7 @@ namespace lve {
                                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer,
                                stagingBufferMemory);
 
-        void *data;
+        void *data = nullptr;
         vkMapMemory(lveDevice.device(), stagingBufferMemory, 0, bufferSize, 0, &data);
         memcpy(data, vertices.data(), NC_ST(bufferSize));
         vkUnmapMemory(lveDevice.device(), stagingBufferMemory);
@@ -81,7 +81,7 @@ namespace lve {
                                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer,
                                stagingBufferMemory);
 
-        void *data;
+        void *data = nullptr;
         vkMapMemory(lveDevice.device(), stagingBufferMemory, 0, bufferSize, 0, &data);
         memcpy(data, indices.data(), NC_ST(bufferSize));
         vkUnmapMemory(lveDevice.device(), stagingBufferMemory);

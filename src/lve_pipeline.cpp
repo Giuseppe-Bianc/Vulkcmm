@@ -43,20 +43,20 @@ namespace lve {
         createShaderModule(fragCode, &fragShaderModule);
 
         std::array<VkPipelineShaderStageCreateInfo, 2> shaderStages{};
-        shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        shaderStages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
-        shaderStages[0].module = vertShaderModule;
-        shaderStages[0].pName = "main";
-        shaderStages[0].flags = 0;
-        shaderStages[0].pNext = nullptr;
-        shaderStages[0].pSpecializationInfo = nullptr;
-        shaderStages[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        shaderStages[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-        shaderStages[1].module = fragShaderModule;
-        shaderStages[1].pName = "main";
-        shaderStages[1].flags = 0;
-        shaderStages[1].pNext = nullptr;
-        shaderStages[1].pSpecializationInfo = nullptr;
+        shaderStages[0] = {.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+                           .pNext = nullptr,
+                           .flags = 0,
+                           .stage = VK_SHADER_STAGE_VERTEX_BIT,
+                           .module = vertShaderModule,
+                           .pName = "main",
+                           .pSpecializationInfo = nullptr};
+        shaderStages[1] = {.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+                           .pNext = nullptr,
+                           .flags = 0,
+                           .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
+                           .module = fragShaderModule,
+                           .pName = "main",
+                           .pSpecializationInfo = nullptr};
 
         auto bindingDescriptions = LveModel::Vertex::getBindingDescriptions();
         auto attributeDescriptions = LveModel::Vertex::getAttributeDescriptions();
