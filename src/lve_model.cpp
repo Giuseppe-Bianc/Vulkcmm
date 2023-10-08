@@ -26,16 +26,6 @@ namespace lve {
         createIndexBuffers(builder.indices);
     }
 
-    LveModel::~LveModel() {
-        vkDestroyBuffer(lveDevice.device(), vertexBuffer, nullptr);
-        vkFreeMemory(lveDevice.device(), vertexBufferMemory, nullptr);
-
-        if(hasIndexBuffer) {
-            vkDestroyBuffer(lveDevice.device(), indexBuffer, nullptr);
-            vkFreeMemory(lveDevice.device(), indexBufferMemory, nullptr);
-        }
-    }
-
     std::unique_ptr<LveModel> LveModel::createModelFromFile(LveDevice &device, const std::string &filepath) {
         Builder builder{};
         builder.loadModel(filepath);
@@ -46,25 +36,24 @@ namespace lve {
         vertexCount = NC_UI32T(vertices.size());
         assert(vertexCount >= 3 && "Vertex count must be at least 3");
         const VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
+        uint32_t vertexSize = sizeof(vertices[0]);
 
-        VkBuffer stagingBuffer;
-        VkDeviceMemory stagingBufferMemory;
-        lveDevice.createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-                               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer,
-                               stagingBufferMemory);
+        LveBuffer stagingBuffer{
+            lveDevice,
+            vertexSize,
+            vertexCount,
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+        };
 
-        void *data = nullptr;
-        vkMapMemory(lveDevice.device(), stagingBufferMemory, 0, bufferSize, 0, &data);
-        memcpy(data, vertices.data(), NC_ST(bufferSize));
-        vkUnmapMemory(lveDevice.device(), stagingBufferMemory);
+        stagingBuffer.map();
+        stagingBuffer.writeToBuffer(std::bit_cast<void *>(vertices.data()));
 
-        lveDevice.createBuffer(bufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-                               VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory);
+        vertexBuffer = std::make_unique<LveBuffer>(lveDevice, vertexSize, vertexCount,
+                                                   VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                                                   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-        lveDevice.copyBuffer(stagingBuffer, vertexBuffer, bufferSize);
-
-        vkDestroyBuffer(lveDevice.device(), stagingBuffer, nullptr);
-        vkFreeMemory(lveDevice.device(), stagingBufferMemory, nullptr);
+        lveDevice.copyBuffer(stagingBuffer.getBuffer(), vertexBuffer->getBuffer(), bufferSize);
     }
 
     void LveModel::createIndexBuffers(const std::vector<uint32_t> &indices) {
@@ -73,26 +62,25 @@ namespace lve {
 
         if(!hasIndexBuffer) { return; }
 
-        VkDeviceSize bufferSize = sizeof(indices[0]) * indexCount;
+        const VkDeviceSize bufferSize = sizeof(indices[0]) * indexCount;
+        uint32_t indexSize = sizeof(indices[0]);
 
-        VkBuffer stagingBuffer;
-        VkDeviceMemory stagingBufferMemory;
-        lveDevice.createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-                               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer,
-                               stagingBufferMemory);
+        LveBuffer stagingBuffer{
+            lveDevice,
+            indexSize,
+            indexCount,
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+        };
 
-        void *data = nullptr;
-        vkMapMemory(lveDevice.device(), stagingBufferMemory, 0, bufferSize, 0, &data);
-        memcpy(data, indices.data(), NC_ST(bufferSize));
-        vkUnmapMemory(lveDevice.device(), stagingBufferMemory);
+        stagingBuffer.map();
+        stagingBuffer.writeToBuffer(std::bit_cast<void *>(indices.data()));
 
-        lveDevice.createBuffer(bufferSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-                               VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory);
+        indexBuffer = std::make_unique<LveBuffer>(lveDevice, indexSize, indexCount,
+                                                  VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                                                  VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-        lveDevice.copyBuffer(stagingBuffer, indexBuffer, bufferSize);
-
-        vkDestroyBuffer(lveDevice.device(), stagingBuffer, nullptr);
-        vkFreeMemory(lveDevice.device(), stagingBufferMemory, nullptr);
+        lveDevice.copyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
     }
 
     void LveModel::draw(VkCommandBuffer commandBuffer) const noexcept {
@@ -103,12 +91,12 @@ namespace lve {
         }
     }
 
-    void LveModel::bind(VkCommandBuffer commandBuffer) noexcept {
-        std::vector<VkBuffer> buffers = {vertexBuffer};
+    void LveModel::bind(VkCommandBuffer commandBuffer) const noexcept {
+        std::vector<VkBuffer> buffers = {vertexBuffer->getBuffer()};
         std::vector<VkDeviceSize> offsets = {0};
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers.data(), offsets.data());
 
-        if(hasIndexBuffer) { vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32); }
+        if(hasIndexBuffer) { vkCmdBindIndexBuffer(commandBuffer, indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32); }
     }
 
     std::vector<VkVertexInputBindingDescription> LveModel::Vertex::getBindingDescriptions() {
@@ -162,7 +150,7 @@ namespace lve {
                     vertex.uv = {attrib.texcoords[2 * index.texcoord_index + 0], attrib.texcoords[2 * index.texcoord_index + 1]};
                 }
 
-                if(uniqueVertices.count(vertex) == 0) {
+                if(!uniqueVertices.contains(vertex)) {
                     uniqueVertices[vertex] = NC_UI32T(vertices.size());
                     vertices.push_back(vertex);
                 }

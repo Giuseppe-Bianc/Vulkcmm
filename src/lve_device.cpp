@@ -1,14 +1,10 @@
 #include "lve_device.hpp"
-
-// std headers
-#include <cstring>
-#include <iostream>
-#include <set>
-#include <unordered_set>
+// #define PRINT_DETAILS
 
 namespace lve {
 
     DISABLE_WARNINGS_PUSH(26485 26481 26446 26482)
+#ifdef PRINT_DETAILS
     void SwapChainSupportDetails::printDetails(const SwapChainSupportDetails &swapCainsDetails) {
         LINFO("Swapchain support details:");
         LINFO("Image Count: {}-{}", swapCainsDetails.capabilities.minImageCount, swapCainsDetails.capabilities.maxImageCount);
@@ -24,6 +20,9 @@ namespace lve {
               string_VkCompositeAlphaFlagsKHR(swapCainsDetails.capabilities.supportedCompositeAlpha));
         LINFO("Supported Usage Flags: {}", string_VkImageUsageFlags(swapCainsDetails.capabilities.supportedUsageFlags));
     }
+#else
+    void SwapChainSupportDetails::printDetails([[maybe_unused]] const SwapChainSupportDetails &swapCainsDetails) noexcept {}
+#endif  // PRINT_DETAILS
 
 #pragma optimize("gt", on)
     [[nodiscard]] inline static std::string_view debugCallbackString(
@@ -163,10 +162,12 @@ namespace lve {
 
         vkGetPhysicalDeviceProperties(physicalDevice, &properties);
         LINFO("Device count: {}", deviceCount);
+#ifdef PRINT_DETAILS
         LINFO("API Version: {}", properties.apiVersion);
         LINFO("Driver Version: {}", properties.driverVersion);
         LINFO("Vendor ID: {}", properties.vendorID);
         LINFO("Physical Device ID: {}", properties.deviceID);
+#endif  // PRINT_DETAILS
         LINFO("Physical Device Name: physical device{0}", properties.deviceName);
     }
 

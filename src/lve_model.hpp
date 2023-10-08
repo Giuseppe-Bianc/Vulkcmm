@@ -1,5 +1,6 @@
 #pragma once
 
+#include "lve_buffer.hpp"
 #include "lve_device.hpp"
 
 namespace lve {
@@ -27,14 +28,14 @@ namespace lve {
         };
 
         LveModel(LveDevice &device, const LveModel::Builder &builder);
-        ~LveModel();
+        ~LveModel() = default;
 
         LveModel(const LveModel &) = delete;
         LveModel &operator=(const LveModel &) = delete;
 
         static std::unique_ptr<LveModel> createModelFromFile(LveDevice &device, const std::string &filepath);
 
-        void bind(VkCommandBuffer commandBuffer) noexcept;
+        void bind(VkCommandBuffer commandBuffer) const noexcept;
         void draw(VkCommandBuffer commandBuffer) const noexcept;
 
     private:
@@ -43,13 +44,11 @@ namespace lve {
 
         LveDevice &lveDevice;
 
-        VkBuffer vertexBuffer;
-        VkDeviceMemory vertexBufferMemory;
+        std::unique_ptr<LveBuffer> vertexBuffer;
         uint32_t vertexCount;
 
         bool hasIndexBuffer = false;
-        VkBuffer indexBuffer;
-        VkDeviceMemory indexBufferMemory;
+        std::unique_ptr<LveBuffer> indexBuffer;
         uint32_t indexCount;
     };
 }  // namespace lve

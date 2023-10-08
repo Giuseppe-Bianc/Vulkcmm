@@ -8,7 +8,7 @@ namespace lve {
         VkSurfaceCapabilitiesKHR capabilities{};
         std::vector<VkSurfaceFormatKHR> formats{};
         std::vector<VkPresentModeKHR> presentModes{};
-        static void printDetails(const SwapChainSupportDetails &swapCainsDetails);
+        static void printDetails(const SwapChainSupportDetails &swapCainsDetails) noexcept;
     };
 
     struct QueueFamilyIndices {

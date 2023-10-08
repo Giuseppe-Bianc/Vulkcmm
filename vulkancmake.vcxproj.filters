@@ -63,6 +63,8 @@
     <ClInclude Include="src\simple_render_system.hpp">
       <Filter>Headers</Filter>
     </ClInclude>
+    <ClInclude Include="src\lve_buffer.hpp" />
+    <ClInclude Include="src\lve_frame_info.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Simple_render_system.cpp">
@@ -101,5 +103,6 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Sources\src</Filter>
     </ClCompile>
+    <ClCompile Include="src\lve_buffer.cpp" />
   </ItemGroup>
 </Project>
